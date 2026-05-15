@@ -1,0 +1,40 @@
+site_name: Verger
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: green
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode (Default)
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - navigation.top
+    - search.suggest
+    - search.highlight
+
+extra:
+  generator: false
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - Configuration: guide/config.md
+      - CLI Usage: guide/cli.md
+  - Architecture:
+      - Overview: architecture/overview.md
+  - Contributing:
+      - Setup: contributing/setup.md
