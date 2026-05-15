@@ -23,6 +23,8 @@ class VergerConfig(BaseModel):
     def get_model_ref(self, model_name: str) -> str:
         """Helper to get the string reference for a model regardless of its config style."""
         config = self.models.get(model_name)
+        if config is None:
+            raise KeyError(f"Model '{model_name}' not found in configuration.")
         if isinstance(config, ModelConfig):
             return config.ref
         return config
