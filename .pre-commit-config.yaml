@@ -9,6 +9,9 @@ repos:
       - id: check-toml
       - id: check-json
       - id: check-added-large-files
+      - id: detect-private-key
+      - id: mixed-line-ending
+      - id: check-merge-conflict
 
   # 2. Ruff (Linting & Formatting)
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -35,7 +38,16 @@ repos:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
 
-  # 5. Spell Checking
+  # 5. Security Vulnerabilities
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.8.3
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
+        additional_dependencies: ["bandit[toml]"]
+        exclude: ^tests/
+
+  # 6. Spell Checking
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:

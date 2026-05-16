@@ -1,4 +1,5 @@
 import typer
+
 from verger.core.config.loader import get_config
 
 # Initialize the Typer application
@@ -53,8 +54,9 @@ def tui():
         launch_tui()
     except ImportError:
         typer.secho(
-            "Error: Textual is not installed. Please install it with 'pip install textual' or 'uv add textual'.",
+            "Error: Textual is not installed. "
+            "Please install it with 'pip install textual' or 'uv add textual'.",
             fg=typer.colors.RED,
             bold=True,
         )
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None

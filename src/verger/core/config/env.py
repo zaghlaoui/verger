@@ -1,13 +1,14 @@
 import logging
 from pathlib import Path
-from typing import Optional
+
 from dotenv import load_dotenv
+
 from verger.core.config.loader import get_config
 
 logger = logging.getLogger(__name__)
 
 
-def load_env(root_dir: Optional[Path] = None):
+def load_env(root_dir: Path | None = None):
     """
     Loads environment variables from the file specified in the configuration.
     Defaults to '.env' in the current working directory.

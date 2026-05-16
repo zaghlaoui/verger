@@ -1,6 +1,7 @@
 import pytest
-from verger.core.prompts.registry import registry as prompt_registry
+
 from verger.core.plugins import load_plugins
+from verger.core.prompts.registry import registry as prompt_registry
 
 
 @pytest.fixture(autouse=True)

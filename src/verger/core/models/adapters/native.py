@@ -1,5 +1,6 @@
-from verger.core.models.base import ModelResolver, VergerModel
 from typing import Any
+
+from verger.core.models.base import ModelResolver, VergerModel
 
 
 class NativeFunctionAdapter(VergerModel):

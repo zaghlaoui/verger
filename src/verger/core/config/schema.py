@@ -1,4 +1,3 @@
-from typing import Dict, Optional, Union
 from pydantic import BaseModel, Field
 
 
@@ -12,13 +11,13 @@ class ModelConfig(BaseModel):
 class VergerConfig(BaseModel):
     """The main [tool.verger] configuration schema."""
 
-    env_file: Optional[str] = ".env"
+    env_file: str | None = ".env"
 
     # Prompts are currently just a name mapped to a reference string
-    prompts: Dict[str, str] = Field(default_factory=dict)
+    prompts: dict[str, str] = Field(default_factory=dict)
 
     # Models can be a simple reference string or a detailed ModelConfig object
-    models: Dict[str, Union[str, ModelConfig]] = Field(default_factory=dict)
+    models: dict[str, str | ModelConfig] = Field(default_factory=dict)
 
     def get_model_ref(self, model_name: str) -> str:
         """Helper to get the string reference for a model regardless of its config style."""

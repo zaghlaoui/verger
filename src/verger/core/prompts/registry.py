@@ -1,4 +1,3 @@
-from typing import List
 from .base import PromptResolver, VergerPrompt
 
 
@@ -10,7 +9,7 @@ class PromptRegistry:
     """
 
     def __init__(self):
-        self._resolvers: List[PromptResolver] = []
+        self._resolvers: list[PromptResolver] = []
 
     def register(self, resolver: PromptResolver) -> None:
         self._resolvers.append(resolver)

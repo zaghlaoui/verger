@@ -1,6 +1,7 @@
 import os
-from verger.core.config.loader import load_config, get_config
+
 from verger.core.config.env import load_env
+from verger.core.config.loader import get_config, load_config
 
 
 def test_load_config_from_pyproject(mock_user_project):

@@ -1,6 +1,7 @@
 import importlib
-import pkgutil
 import logging
+import pkgutil
+
 from verger.core.models.registry import registry as model_registry
 from verger.core.prompts.registry import registry as prompt_registry
 

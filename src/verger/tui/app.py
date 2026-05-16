@@ -1,5 +1,6 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer, ListView, ListItem, Label
+from textual.widgets import Footer, Header, Label, ListItem, ListView
+
 from verger.core.config.loader import get_config
 from verger.core.prompts.registry import registry as prompt_registry
 

@@ -1,4 +1,5 @@
-from typing import List, Any
+from typing import Any
+
 from .base import ModelResolver, VergerModel
 
 
@@ -9,7 +10,7 @@ class ModelRegistry:
     """
 
     def __init__(self):
-        self._resolvers: List[ModelResolver] = []
+        self._resolvers: list[ModelResolver] = []
 
     def register(self, resolver: ModelResolver) -> None:
         """Add a new plugin/resolver to the registry."""

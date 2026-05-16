@@ -1,6 +1,7 @@
 import ast
 from pathlib import Path
-from verger.core.prompts.base import VergerPrompt, PromptResolver
+
+from verger.core.prompts.base import PromptResolver, VergerPrompt
 
 
 class NativeStringPrompt(VergerPrompt):
@@ -39,9 +40,7 @@ class NativeStringResolver(PromptResolver):
         file_path = Path(f"{module_path_str.replace('.', '/')}.py")
 
         if not file_path.exists():
-            raise FileNotFoundError(
-                f"Could not find Python file for prompt: {file_path}"
-            )
+            raise FileNotFoundError(f"Could not find Python file for prompt: {file_path}")
 
         # Use AST to extract the string without executing the file
         content = file_path.read_text()
@@ -56,9 +55,7 @@ class NativeStringResolver(PromptResolver):
                         ):
                             return NativeStringPrompt(ref, node.value.value, file_path)
 
-        raise ValueError(
-            f"Variable '{var_name}' not found or is not a string in {file_path}"
-        )
+        raise ValueError(f"Variable '{var_name}' not found or is not a string in {file_path}")
 
 
 def get_resolver() -> PromptResolver:

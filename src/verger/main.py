@@ -1,4 +1,5 @@
 import sys
+
 from verger.cli.app import app
 from verger.core.bootstrap import setup_app
 from verger.utils.logging import setup_logging

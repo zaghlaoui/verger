@@ -1,6 +1,6 @@
-from verger.core.plugins import load_plugins
-from verger.core.config.loader import load_config
 from verger.core.config.env import load_env
+from verger.core.config.loader import load_config
+from verger.core.plugins import load_plugins
 
 
 def setup_app():

@@ -1,26 +1,24 @@
+import logging
 import os
 import tomllib
-import logging
 from pathlib import Path
-from typing import Optional
+
 from verger.core.config.schema import VergerConfig
 
 logger = logging.getLogger(__name__)
 
 # This will hold the loaded configuration singleton
-_config: Optional[VergerConfig] = None
+_config: VergerConfig | None = None
 
 
 def get_config() -> VergerConfig:
     """Returns the loaded configuration. Raises error if not loaded."""
     if _config is None:
-        raise RuntimeError(
-            "Verger configuration has not been loaded. Call load_config() first."
-        )
+        raise RuntimeError("Verger configuration has not been loaded. Call load_config() first.")
     return _config
 
 
-def load_config(root_dir: Optional[Path] = None) -> VergerConfig:
+def load_config(root_dir: Path | None = None) -> VergerConfig:
     """
     Finds and parses the configuration file.
     Priority:
@@ -71,7 +69,7 @@ def _load_from_file(path: Path) -> VergerConfig:
     return VergerConfig(**data)
 
 
-def _parse_pyproject(path: Path) -> Optional[dict]:
+def _parse_pyproject(path: Path) -> dict | None:
     """Helper to extract [tool.verger] from pyproject.toml."""
     with open(path, "rb") as f:
         data = tomllib.load(f)

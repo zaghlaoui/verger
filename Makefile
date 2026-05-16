@@ -25,7 +25,10 @@ type-check:
 
 .PHONY: secure
 secure:
+	@echo "--- Scanning for Secrets ---"
 	uv run detect-secrets scan
+	@echo "\n--- Scanning for Security Vulnerabilities (Bandit) ---"
+	uv run bandit -r src -s B101 -l
 
 .PHONY: check-all
 check-all:
