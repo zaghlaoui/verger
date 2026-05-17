@@ -1,14 +1,24 @@
+.DEFAULT_GOAL := help
+
 .PHONY: help
 help:
-	@echo "Available commands:"
-	@echo "  make setup-precommit - Install git hooks"
-	@echo "  make format          - Format code with ruff"
-	@echo "  make lint            - Lint code with ruff"
-	@echo "  make type-check      - Run ty type checker"
-	@echo "  make secure          - Scan for secrets"
-	@echo "  make check-all       - Run all pre-commit hooks"
-	@echo "  make test            - Run all tests"
-	@echo "  make cz              - Create a conventional commit"
+	@printf "🚀 Available commands:\n"
+	@printf "  make setup           - 🛠️  Install dev dependencies and configure git hooks\n"
+	@printf "  make setup-precommit - 🪝  Install git hooks\n"
+	@printf "  make format          - 🧹  Format code with ruff\n"
+	@printf "  make lint            - 🔍  Lint code with ruff\n"
+	@printf "  make type-check      - 🏷️  Run ty type checker\n"
+	@printf "  make secure          - 🛡️  Scan for secrets\n"
+	@printf "  make check-all       - ✅  Run all pre-commit hooks\n"
+	@printf "  make test            - 🧪  Run all tests\n"
+	@printf "  make cz              - ✍️  Create a conventional commit\n"
+
+.PHONY: setup
+setup:
+	@printf "📦 Installing development dependencies...\n"
+	uv sync --group dev
+	$(MAKE) setup-precommit
+	@printf "✨ Setup complete!\n"
 
 .PHONY: format
 format:
@@ -25,9 +35,9 @@ type-check:
 
 .PHONY: secure
 secure:
-	@echo "--- Scanning for Secrets ---"
+	@printf "🔐 --- Scanning for Secrets ---\n"
 	uv run detect-secrets scan
-	@echo "\n--- Scanning for Security Vulnerabilities (Bandit) ---"
+	@printf "\n🛡️ --- Scanning for Security Vulnerabilities (Bandit) ---\n"
 	uv run bandit -r src -s B101 -l
 
 .PHONY: check-all
@@ -40,10 +50,10 @@ test:
 
 .PHONY: setup-precommit
 setup-precommit:
+	@printf "🔧 Configuring git hooks...\n"
 	uv run pre-commit install
 	uv run pre-commit install --hook-type commit-msg
-	@echo ""
-	@echo "Git hooks reinstalled!"
+	@printf "\n✅ Git hooks reinstalled!\n"
 
 .PHONY: cz
 cz:
