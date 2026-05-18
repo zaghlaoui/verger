@@ -28,6 +28,10 @@ theme:
     - search.suggest
     - search.highlight
 
+plugins:
+  - search
+  - include-markdown
+
 extra:
   generator: false
 
@@ -38,5 +42,4 @@ nav:
       - CLI Usage: guide/cli.md
   - Architecture:
       - Overview: architecture/overview.md
-  - Contributing:
-      - Setup: contributing/setup.md
+  - Contributing: contributing.md

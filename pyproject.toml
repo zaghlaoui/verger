@@ -34,6 +34,7 @@ dev = [
     "codespell>=2.4.2",
     "commitizen>=4.16.2",
     "bandit>=1.9.4",
+    "mkdocs-include-markdown-plugin>=7.3.0",
 ]
 
 [tool.commitizen]
