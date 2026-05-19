@@ -143,11 +143,12 @@ test = "should_be_extracted"
     data = _parse_pyproject(pyproject_path)
 
     # Should contain exactly what is inside [tool.verger]
+    assert data is not None
     assert data == {
         "env_file": "verger.env",
         "prompts": {"test": "should_be_extracted"},
     }
-    # Ensure sibling [tool.other] was NOT leaked into the result
+    # Ensure sibling [tool.prompts] was NOT leaked into the result
     assert "other" not in data
 
 
