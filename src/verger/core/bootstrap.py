@@ -16,7 +16,7 @@ def setup_app():
     if cwd not in sys.path:
         sys.path.insert(0, cwd)
 
-    # Step 1: Load configuration (finds pyproject.toml in CWD)
+    # Step 1: Load configuration
     load_config()
 
     # Step 2: Load environment variables (based on env_file in config)

@@ -4,6 +4,7 @@ import tomllib
 from pathlib import Path
 
 from verger.core.config.schema import VergerConfig
+from verger.core.exceptions import VergerConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,8 @@ def load_config(root_dir: Path | None = None) -> VergerConfig:
     Finds and parses the configuration file.
     Priority:
     1. VERGER_CONFIG environment variable
-    2. pyproject.toml [tool.verger] in CWD
-    3. verger.toml in CWD
+    2. verger.toml in CWD
+    3. pyproject.toml [tool.verger] in CWD
     """
     global _config
 
@@ -36,11 +37,18 @@ def load_config(root_dir: Path | None = None) -> VergerConfig:
             logger.debug(f"Loaded configuration from environment override: {path}")
             return _config
         else:
-            logger.error(f"VERGER_CONFIG points to non-existent file: {path}")
+            raise VergerConfigurationError(f"VERGER_CONFIG points to non-existent file: {path}")
 
     root = root_dir or Path.cwd()
 
-    # 2. Check pyproject.toml
+    # 2. Check verger.toml
+    verger_toml_path = root / "verger.toml"
+    if verger_toml_path.exists():
+        _config = _load_from_file(verger_toml_path)
+        logger.debug(f"Loaded configuration from {verger_toml_path}")
+        return _config
+
+    # 3. Check pyproject.toml
     pyproject_path = root / "pyproject.toml"
     if pyproject_path.exists():
         config_data = _parse_pyproject(pyproject_path)
@@ -48,13 +56,6 @@ def load_config(root_dir: Path | None = None) -> VergerConfig:
             _config = VergerConfig(**config_data)
             logger.debug(f"Loaded configuration from {pyproject_path}")
             return _config
-
-    # 3. Check verger.toml
-    verger_toml_path = root / "verger.toml"
-    if verger_toml_path.exists():
-        _config = _load_from_file(verger_toml_path)
-        logger.debug(f"Loaded configuration from {verger_toml_path}")
-        return _config
 
     # Default: Empty config
     logger.warning("No configuration file found. Using default settings.")
