@@ -1,3 +1,6 @@
+import os
+import sys
+
 from verger.core.config.env import load_env
 from verger.core.config.loader import load_config
 from verger.core.plugins import load_plugins
@@ -8,6 +11,11 @@ def setup_app():
     Initializes the core logic by loading configuration, environment variables,
     and discovering plugins.
     """
+    # Inject Current Working Directory into sys.path so we can import user modules
+    cwd = os.getcwd()
+    if cwd not in sys.path:
+        sys.path.insert(0, cwd)
+
     # Step 1: Load configuration (finds pyproject.toml in CWD)
     load_config()
 
