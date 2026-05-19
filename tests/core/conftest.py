@@ -12,19 +12,18 @@ def mock_user_project(tmp_path):
     project_dir = tmp_path / "user_ai_app"
     project_dir.mkdir()
 
-    # 1. Create a pyproject.toml
-    pyproject_content = """
-[tool.verger]
+    # 1. Create a verger.toml
+    verger_content = """
 env_file = ".env.test"
 
-[tool.verger.prompts]
+[prompts]
 system = "prompts:SYSTEM_PROMPT"
 user = "prompts:USER_PROMPT"
 
-[tool.verger.models]
+[models]
 simple = "models:my_model"
 """
-    (project_dir / "pyproject.toml").write_text(pyproject_content)
+    (project_dir / "verger.toml").write_text(verger_content)
 
     # 2. Create a prompts.py file
     prompts_content = """
