@@ -1,4 +1,4 @@
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 
 @runtime_checkable
@@ -13,7 +13,18 @@ class VergerPrompt(Protocol):
         ...
 
     def get_id(self) -> str:
-        """A unique identifier for this prompt (e.g., 'module.name:VARIABLE')."""
+        """A unique identifier for this prompt (e.g., its class or memory address)."""
+        ...
+
+    def format(self, **kwargs) -> str:
+        """Fill the prompt with variables and return the resulting string."""
+        ...
+
+    def get_variables(self) -> set[str]:
+        """
+        Extract and return the set of variable names required by this prompt.
+        This allows for inspection and validation before formatting.
+        """
         ...
 
 
@@ -21,13 +32,13 @@ class VergerPrompt(Protocol):
 class PromptResolver(Protocol):
     """
     Interface for a prompt plugin.
-    It knows how to load a specific type of prompt (e.g., String in Python, Jinja file, etc.)
+    It knows how to wrap a specific type of prompt object (e.g., String, LangChain Template, etc.)
     """
 
-    def can_handle(self, ref: str) -> bool:
-        """Return True if this resolver recognizes the reference format."""
+    def can_handle(self, obj: Any) -> bool:
+        """Return True if this resolver recognizes the object format."""
         ...
 
-    def load(self, ref: str) -> VergerPrompt:
-        """Load the prompt and return a VergerPrompt object."""
+    def create_adapter(self, obj: Any) -> VergerPrompt:
+        """Wrap the prompt object and return a VergerPrompt adapter."""
         ...

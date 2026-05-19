@@ -1,11 +1,12 @@
+from typing import Any
+
 from .base import PromptResolver, VergerPrompt
 
 
 class PromptRegistry:
     """
     Registry for Prompt Resolvers.
-    Unlike models (which are objects), prompts are often identified by a
-    reference string (e.g., a path or a module:var).
+    It takes an unknown prompt object, finds the right resolver, and returns an adapter.
     """
 
     def __init__(self):
@@ -14,13 +15,16 @@ class PromptRegistry:
     def register(self, resolver: PromptResolver) -> None:
         self._resolvers.append(resolver)
 
-    def resolve(self, ref: str) -> VergerPrompt:
-        """Find the right resolver for the given prompt reference."""
+    def resolve(self, obj: Any) -> VergerPrompt:
+        """Find the right resolver for the given prompt object."""
         for resolver in self._resolvers:
-            if resolver.can_handle(ref):
-                return resolver.load(ref)
+            if resolver.can_handle(obj):
+                return resolver.create_adapter(obj)
 
-        raise ValueError(f"No prompt resolver found for reference: {ref}")
+        raise ValueError(
+            f"No prompt adapter found for object of type: {type(obj)}. "
+            "Please ensure the correct Verger prompt plugin is installed."
+        )
 
 
 # Singleton instance
