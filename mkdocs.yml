@@ -36,7 +36,9 @@ extra:
   generator: false
 
 nav:
-  - Home: index.md
+  - Home:
+      - Verger: index.md
+      - Quickstart: quickstart.md
   - User Guide:
       - Configuration: guide/config.md
       - CLI Usage: guide/cli.md
