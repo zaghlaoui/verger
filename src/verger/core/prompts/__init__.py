@@ -1,4 +1,4 @@
 from .base import PromptResolver, VergerPrompt
-from .registry import prompt_registry
+from .prompt_registry import prompt_registry
 
 __all__ = ["prompt_registry", "VergerPrompt", "PromptResolver"]

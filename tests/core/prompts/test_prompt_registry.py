@@ -8,7 +8,7 @@ from verger.core.prompts import PromptResolver, VergerPrompt, prompt_registry
 
 def test_prompt_registry_resolution_success():
     """Test that the registry can resolve an object using a registered resolver."""
-    from verger.core.prompts.registry import PromptRegistry
+    from verger.core.prompts.prompt_registry import PromptRegistry
 
     test_registry = PromptRegistry()
 
@@ -29,7 +29,7 @@ def test_prompt_registry_resolution_success():
 
 def test_prompt_registry_resolution_failure():
     """Test that the registry raises VergerResolutionError when no resolver matches."""
-    from verger.core.prompts.registry import PromptRegistry
+    from verger.core.prompts.prompt_registry import PromptRegistry
 
     test_registry = PromptRegistry()
 
@@ -44,6 +44,6 @@ def test_prompt_registry_resolution_failure():
 
 def test_singleton_registry_instance():
     """Ensure that the exported prompt_registry is a singleton instance of PromptRegistry."""
-    from verger.core.prompts.registry import PromptRegistry
+    from verger.core.prompts.prompt_registry import PromptRegistry
 
     assert isinstance(prompt_registry, PromptRegistry)

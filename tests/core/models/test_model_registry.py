@@ -9,7 +9,7 @@ from verger.core.models import ModelResolver, VergerModel, model_registry
 def test_model_registry_resolution_success():
     """Test that the registry can resolve an object using a registered resolver."""
     # Create a fresh registry for testing to avoid side effects
-    from verger.core.models.registry import ModelRegistry
+    from verger.core.models.model_registry import ModelRegistry
 
     test_registry = ModelRegistry()
 
@@ -30,7 +30,7 @@ def test_model_registry_resolution_success():
 
 def test_model_registry_resolution_failure():
     """Test that the registry raises VergerResolutionError when no resolver matches."""
-    from verger.core.models.registry import ModelRegistry
+    from verger.core.models.model_registry import ModelRegistry
 
     test_registry = ModelRegistry()
 
@@ -45,6 +45,6 @@ def test_model_registry_resolution_failure():
 
 def test_singleton_registry_instance():
     """Ensure that the exported model_registry is a singleton instance of ModelRegistry."""
-    from verger.core.models.registry import ModelRegistry
+    from verger.core.models.model_registry import ModelRegistry
 
     assert isinstance(model_registry, ModelRegistry)
