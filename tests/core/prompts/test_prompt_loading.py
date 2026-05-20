@@ -1,7 +1,7 @@
 import pytest
 
 from verger.core.plugins import load_plugins
-from verger.core.prompts.registry import registry as prompt_registry
+from verger.core.prompts import prompt_registry
 from verger.utils.imports import import_reference
 
 

@@ -2,8 +2,8 @@ import importlib
 import logging
 import pkgutil
 
-from verger.core.models.registry import registry as model_registry
-from verger.core.prompts.registry import registry as prompt_registry
+from verger.core.models import model_registry
+from verger.core.prompts import prompt_registry
 
 logger = logging.getLogger(__name__)
 

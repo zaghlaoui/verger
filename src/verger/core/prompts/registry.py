@@ -53,4 +53,4 @@ class PromptRegistry:
 
 
 # Singleton instance to be used across the application
-registry = PromptRegistry()
+prompt_registry = PromptRegistry()

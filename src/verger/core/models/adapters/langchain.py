@@ -1,6 +1,6 @@
 from typing import Any
 
-from verger.core.models.base import ModelResolver, VergerModel
+from verger.core.models import ModelResolver, VergerModel
 
 
 class LangChainAdapter(VergerModel):

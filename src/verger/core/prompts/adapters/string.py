@@ -1,7 +1,7 @@
 import string
 from typing import Any
 
-from verger.core.prompts.base import PromptResolver, VergerPrompt
+from verger.core.prompts import PromptResolver, VergerPrompt
 
 
 class NativeStringPrompt(VergerPrompt):

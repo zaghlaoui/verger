@@ -53,4 +53,4 @@ class ModelRegistry:
 
 
 # Singleton instance to be used across the application
-registry = ModelRegistry()
+model_registry = ModelRegistry()

@@ -56,7 +56,7 @@ async def test_engine_run_no_variables(mock_user_project):
 
 def test_prompt_variable_discovery(mock_user_project):
     """Test that we can discover variables required by a prompt before running it."""
-    from verger.core.prompts.registry import registry as prompt_registry
+    from verger.core.prompts import prompt_registry
 
     raw_prompt = "Hello {name}, welcome to {city}. Today is {day}."
     prompt = prompt_registry.resolve(raw_prompt)

@@ -8,7 +8,7 @@ from textual.widgets import Button, Footer, Header, Input, Label, Select, TextAr
 
 from verger.core.config.loader import get_config
 from verger.core.engine import ExecutionEngine
-from verger.core.prompts.registry import registry as prompt_registry
+from verger.core.prompts import prompt_registry
 from verger.utils.imports import import_reference
 
 
