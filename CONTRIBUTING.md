@@ -26,6 +26,7 @@ uv run pre-commit install --hook-type commit-msg
 ```
 
 Git hooks will run before every commit and check:
+
 - ✅ Code formatting (Ruff)
 - ✅ Linting issues (Ruff)
 - ✅ Type checking (ty)

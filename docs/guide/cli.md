@@ -8,7 +8,7 @@ Verger provides a set of commands to interact with your AI assets directly from 
 Check if Verger is correctly installed and displays the count of found prompts and models in your project.
 
 ### `verger list-prompts`
-List all prompts defined in your `pyproject.toml` along with their references.
+List all prompts defined in your configuration along with their references.
 
 ### `verger tui`
 Launch the full interactive experience. The TUI allows you to:

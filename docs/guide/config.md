@@ -1,28 +1,42 @@
 # Configuration Guide
 
-Verger is designed to be "Zero-Invasive." You don't need to change your code; you just tell Verger where to look in your `pyproject.toml`.
+Verger is designed to be "Zero-Invasive." You don't need to change your code; you just tell Verger where to look in your configuration file.
 
-## The `[tool.verger]` Section
+## Configuration Files
 
-Add this section to your project's `pyproject.toml` to start using Verger.
+Verger looks for configuration in the following order:
+
+1.  **`VERGER_CONFIG` environment variable**: Path to a specific TOML file.
+2.  **`verger.toml`**: A standalone configuration file in your project root.
+3.  **`pyproject.toml`**: The `[tool.verger]` section in your project's standard configuration file.
+
+### `verger.toml` example
+
+You can put your configuration in a dedicated file:
+
+```toml
+env_file = ".env"
+
+[prompts]
+system_msg = "src/agents/prompts:SYSTEM_PROMPT"
+
+[models]
+gpt4_agent = { ref = "src.agents.main:agent" }
+```
+
+### `pyproject.toml` example
+
+Alternatively, add a `[tool.verger]` section to your `pyproject.toml`:
 
 ```toml
 [tool.verger]
-# Optional: path to your .env file
 env_file = ".env"
 
 [tool.verger.prompts]
-# format: name = "path/to/file:VARIABLE_NAME"
-# or: name = "module.name:VARIABLE_NAME"
 system_msg = "src/agents/prompts:SYSTEM_PROMPT"
-user_msg = "src/agents/prompts:USER_PROMPT"
 
 [tool.verger.models]
-# format: name = { ref = "module:object" }
-# Verger automatically detects if it's LangChain, PydanticAI, or a function.
 gpt4_agent = { ref = "src.agents.main:agent" }
-experimental_chain = { ref = "src.chains.translator:chain" }
-mock_model = { ref = "tests.mocks:dummy_llm" }
 ```
 
 ## How Discovery Works

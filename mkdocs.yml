@@ -3,6 +3,9 @@ site_url: https://zaghlaoui.github.io/verger/
 repo_url: https://github.com/zaghlaoui/verger
 theme:
   name: material
+  favicon: assets/favicon.svg
+  icon:
+    logo: material/forest
   palette:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
@@ -34,6 +37,12 @@ plugins:
 
 extra:
   generator: false
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.emoji
 
 nav:
   - Home:

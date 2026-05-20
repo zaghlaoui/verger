@@ -14,10 +14,14 @@ pip install verger
 ```
 
 ### 2. Configure your project
-Create a `verger.toml` file in your project root to configure your models, prompts, and tools. This file tells Verger where to find your AI resources within your Python codebase.
+Create a `verger.toml` file in your project root. Verger is zero-invasive; it doesn't require any changes to your code. You simply tell it where your existing resources are and which `.env` file to use (it defaults to `.env`).
+
+Verger will automatically import your **models**, **prompts**, and **tools** from your modules.
 
 **verger.toml**
 ```toml
+env_file = ".env"  # Optional, defaults to .env
+
 [prompts]
 translator = "myapp.prompts:SYSTEM_MSG"
 
@@ -32,6 +36,9 @@ If you prefer to keep all your configuration in one place, you can use `pyprojec
 
 **pyproject.toml**
 ```toml
+[tool.verger]
+env_file = ".env"  # Optional, defaults to .env
+
 [tool.verger.prompts]
 translator = "myapp.prompts:SYSTEM_MSG"
 
