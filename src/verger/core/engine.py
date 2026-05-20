@@ -1,3 +1,5 @@
+"""The core execution engine for running prompts against models."""
+
 from typing import Any
 
 from verger.core.models import model_registry

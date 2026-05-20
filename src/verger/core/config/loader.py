@@ -1,3 +1,5 @@
+"""Configuration loading from verger.toml or pyproject.toml."""
+
 import logging
 import os
 import tomllib

@@ -1,3 +1,5 @@
+"""Plugin discovery and dynamic loading system."""
+
 import importlib
 import logging
 import pkgutil

@@ -1,3 +1,5 @@
+"""Initialization logic for setting up the Verger core."""
+
 import os
 import sys
 

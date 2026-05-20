@@ -1,3 +1,6 @@
+"""Custom exceptions for the Verger framework."""
+
+
 class VergerError(Exception):
     """Base exception for all Verger-related errors."""
 

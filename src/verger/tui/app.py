@@ -1,6 +1,12 @@
+"""
+Verger Terminal User Interface.
+
+Provides a side-by-side comparison environment for AI models and prompts.
+"""
+
 import asyncio
 import string
-from typing import cast
+from typing import Any, cast
 
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, HorizontalScroll, Vertical, VerticalScroll
@@ -13,16 +19,34 @@ from verger.utils.imports import import_reference
 
 
 class ConfigPane(Vertical):
-    """A single configuration pane containing model select,
-    prompt preset, editable prompt, and output."""
+    """
+    A single configuration pane.
 
-    def __init__(self, pane_id: int, app_ref: "VergerTUI", **kwargs):
+    Contains model selection, prompt preset selection, an editable prompt text area,
+    and a display for the model's output.
+    """
+
+    def __init__(self, pane_id: int, app_ref: "VergerTUI", **kwargs: Any):
+        """
+        Initialize the configuration pane.
+
+        Args:
+            pane_id: Unique numerical ID for this pane.
+            app_ref: Reference to the parent TUI application.
+            **kwargs: Additional parameters for the Vertical container.
+        """
         super().__init__(**kwargs)
         self.pane_id = pane_id
         self.app_ref = app_ref
         self.border_title = f"Configuration {pane_id}"
 
     def compose(self) -> ComposeResult:
+        """
+        Build the UI structure for the configuration pane.
+
+        Yields:
+            The widgets that make up the pane.
+        """
         model_options = [(name, name) for name in self.app_ref.config.models.keys()]
         prompt_options = [(name, ref) for name, ref in self.app_ref.config.prompts.items()]
 
@@ -45,7 +69,12 @@ class ConfigPane(Vertical):
         yield TextArea(id=f"output-display-{self.pane_id}", classes="pane-output", read_only=True)
 
     def on_select_changed(self, event: Select.Changed) -> None:
-        """Handle preset selection to populate the text area."""
+        """
+        Handle preset selection to populate the text area.
+
+        Args:
+            event: The selection change event.
+        """
         if event.select.id == f"prompt-select-{self.pane_id}" and event.value != Select.BLANK:
             try:
                 # Load the raw prompt object from the reference
@@ -61,7 +90,12 @@ class ConfigPane(Vertical):
                 self.app_ref.notify(f"Error loading preset: {e}", severity="error")
 
     def on_text_area_changed(self, event: TextArea.Changed) -> None:
-        """When the text area changes, tell the main app to update the shared variables."""
+        """
+        Notify the app to update shared variables when text area changes.
+
+        Args:
+            event: The text area change event.
+        """
         # Using a small delay to avoid excessive parsing while typing
         self.app_ref.schedule_variable_update()
 
@@ -69,7 +103,9 @@ class ConfigPane(Vertical):
 class VergerTUI(App):
     """
     Verger Terminal User Interface.
-    Side-by-side evaluation of prompts and models.
+
+    Main application that manages multiple configuration panes and shared
+    variable inputs for side-by-side evaluation.
     """
 
     TITLE = "Verger: The AI Weaver"
@@ -185,7 +221,13 @@ class VergerTUI(App):
         ("a", "add_pane_action", "Add Pane"),
     ]
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
+        """
+        Initialize the Verger TUI.
+
+        Args:
+            **kwargs: Additional parameters for the App.
+        """
         super().__init__(**kwargs)
         self.engine = ExecutionEngine()
         self.config = get_config()
@@ -193,6 +235,12 @@ class VergerTUI(App):
         self._update_timer = None
 
     def compose(self) -> ComposeResult:
+        """
+        Build the UI structure for the main application.
+
+        Yields:
+            The widgets that make up the interface.
+        """
         yield Header()
 
         # TOP HALF: Horizontal Scroll for Configuration Panes
@@ -215,16 +263,23 @@ class VergerTUI(App):
         yield Footer()
 
     async def on_mount(self) -> None:
-        """Add the first pane by default."""
+        """Handle the application mount event."""
         await self.add_pane()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
+        """
+        Handle all button press events.
+
+        Args:
+            event: The button pressed event.
+        """
         if event.button.id in ("add-pane-btn", "add-pane-btn-bottom"):
             await self.add_pane()
         elif event.button.id == "run-btn":
             await self.action_run_engine()
 
     async def action_add_pane_action(self) -> None:
+        """Action for adding a new configuration pane via key binding."""
         await self.add_pane()
 
     async def add_pane(self) -> None:
@@ -237,13 +292,13 @@ class VergerTUI(App):
         await container.mount(ConfigPane(self.pane_count, self), before=add_btn_container)
 
     def schedule_variable_update(self) -> None:
-        """Debounce variable updates so we don't re-render on every keystroke."""
+        """Debounce variable updates to prevent excessive parsing while typing."""
         if self._update_timer is not None:
             self._update_timer.stop()
         self._update_timer = self.set_timer(0.5, self._extract_and_update_variables)
 
     async def _extract_and_update_variables(self) -> None:
-        """Extracts variables from all active panes and updates the shared input list."""
+        """Extract variables from all active panes and update the shared input list."""
         all_variables = set()
         formatter = string.Formatter()
 
@@ -265,7 +320,12 @@ class VergerTUI(App):
         await self._render_variable_inputs(all_variables)
 
     async def _render_variable_inputs(self, variables: set[str]) -> None:
-        """Updates the variable input widgets, preserving existing values."""
+        """
+        Update the variable input widgets, preserving existing values.
+
+        Args:
+            variables: The set of variable names detected in the prompts.
+        """
         container = self.query_one("#variable-inputs", VerticalScroll)
 
         # Save existing values
@@ -294,7 +354,7 @@ class VergerTUI(App):
             )
 
     async def action_run_engine(self) -> None:
-        """Runs all active configurations concurrently."""
+        """Run all active configurations concurrently."""
         status_label = self.query_one("#status-label", Label)
 
         # Collect shared variables
@@ -323,7 +383,13 @@ class VergerTUI(App):
         status_label.update("[green]All runs completed![/green]")
 
     async def _run_single_pane(self, pane: ConfigPane, variables: dict[str, str]) -> None:
-        """Executes a single pane's configuration."""
+        """
+        Execute a single pane's configuration.
+
+        Args:
+            pane: The ConfigPane to run.
+            variables: Shared variables for formatting the prompt.
+        """
         model_select = pane.query_one(f"#model-select-{pane.pane_id}", Select)
         text_area = pane.query_one(f"#prompt-text-{pane.pane_id}", TextArea)
         output_display = pane.query_one(f"#output-display-{pane.pane_id}", TextArea)
@@ -362,7 +428,7 @@ class VergerTUI(App):
             output_display.text = f"Error: {e}"
 
 
-def launch_tui():
-    """Launch the Verger TUI. Core setup is assumed to be handled by the caller (main.py)."""
+def launch_tui() -> None:
+    """Launch the Verger TUI. Core setup is assumed to be handled by the caller."""
     app = VergerTUI()
     app.run()

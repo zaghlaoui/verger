@@ -1,3 +1,5 @@
+"""Typer application defining the CLI commands for Verger."""
+
 import typer
 
 from verger.core.config.loader import get_config

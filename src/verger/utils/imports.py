@@ -1,3 +1,5 @@
+"""Utilities for dynamic importing of user objects."""
+
 import importlib
 from typing import Any
 

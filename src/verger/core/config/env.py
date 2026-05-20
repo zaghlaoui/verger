@@ -1,3 +1,5 @@
+"""Environment variable management and .env loading."""
+
 import logging
 from pathlib import Path
 

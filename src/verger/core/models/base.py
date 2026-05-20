@@ -1,3 +1,5 @@
+"""Base interfaces for model adapters and resolvers."""
+
 from typing import Any, Protocol, runtime_checkable
 
 

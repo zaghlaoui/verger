@@ -1,3 +1,5 @@
+"""Central registry for discovering and resolving prompt adapters."""
+
 from typing import Any
 
 from verger.core.exceptions import VergerResolutionError

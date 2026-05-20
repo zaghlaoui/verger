@@ -1,3 +1,5 @@
+"""Pydantic schemas for Verger configuration."""
+
 from pydantic import BaseModel, Field
 
 

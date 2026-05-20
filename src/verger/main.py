@@ -1,3 +1,5 @@
+"""Main entry point for the Verger application."""
+
 import sys
 
 from verger.cli.app import app
@@ -5,12 +7,14 @@ from verger.core.bootstrap import setup_app
 from verger.utils.logging import setup_logging
 
 
-def main():
+def main() -> None:
     """
-    Entry point:
-    1. Configure how we see logs.
-    2. Initialize the core logic.
-    3. Launch the UI.
+    Main execution routine for Verger.
+
+    This function coordinates the startup sequence:
+    1. Configures logging.
+    2. Initializes the core engine (config, plugins).
+    3. Launches the Typer command-line interface.
     """
     try:
         # Configuration of logs happens at the APP level, not the CORE level.
