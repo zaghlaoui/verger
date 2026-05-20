@@ -35,6 +35,10 @@ dev = [
     "commitizen>=4.16.2",
     "bandit>=1.9.4",
     "mkdocs-include-markdown-plugin>=7.3.0",
+    "pytest-cov>=7.1.0",
+    "interrogate>=1.7.0",
+    "vulture>=2.16",
+    "deptry>=0.25.1",
 ]
 
 [tool.commitizen]
@@ -69,3 +73,37 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/verger --cov-report=term-missing"
+testpaths = ["tests"]
+asyncio_mode = "strict"
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = false
+ignore-magic = false
+ignore-semiprivate = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-module = false
+ignore-nested-functions = false
+ignore-nested-classes = false
+ignore-setters = false
+fail-under = 80
+exclude = ["setup.py", "docs", "build", "tests"]
+ignore-regex = ["^__.*__$"]
+verbose = 0
+quiet = false
+whitelist-regex = []
+color = true
+omit-covered-files = false
+
+[tool.vulture]
+exclude = ["tests"]
+ignore_decorators = ["@app.command", "@app.callback"]
+ignore_names = ["main", "args", "kwargs"]
+min_confidence = 80
+
+[tool.deptry]
+exclude = ["tests", "docs", ".venv"]

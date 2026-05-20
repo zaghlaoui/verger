@@ -117,11 +117,20 @@ make type-check
 # Run security checks
 make secure
 
-# Run tests
-make test
+# Run tests with coverage report
+make test-cov
+
+# Check docstring coverage
+make doc-check
+
+# Find unused code
+make dead-code
+
+# Check for dependency issues
+make dep-check
 
 # Or run all checks at once
-make check-all
+make quality
 ```
 
 ### Pre-commit Hooks

@@ -11,6 +11,11 @@ help:
 	@printf "  make secure          - 🛡️  Scan for secrets\n"
 	@printf "  make check-all       - ✅  Run all pre-commit hooks\n"
 	@printf "  make test            - 🧪  Run all tests\n"
+	@printf "  make test-cov        - 📊  Run tests with coverage report\n"
+	@printf "  make doc-check       - 📝  Check docstring coverage (interrogate)\n"
+	@printf "  make dead-code       - 💀  Find unused code (vulture)\n"
+	@printf "  make dep-check       - 📦  Check for dependency issues (deptry)\n"
+	@printf "  make quality         - 🏆  Run all quality checks at once\n"
 	@printf "  make cz              - ✍️  Create a conventional commit\n"
 
 .PHONY: setup
@@ -47,6 +52,26 @@ check-all:
 .PHONY: test
 test:
 	uv run pytest
+
+.PHONY: test-cov
+test-cov:
+	uv run pytest --cov=src/verger --cov-report=term-missing
+
+.PHONY: doc-check
+doc-check:
+	uv run interrogate src/verger
+
+.PHONY: dead-code
+dead-code:
+	uv run vulture src/verger
+
+.PHONY: dep-check
+dep-check:
+	uv run deptry .
+
+.PHONY: quality
+quality: lint type-check test-cov doc-check dead-code dep-check
+	@printf "✨ All quality checks passed!\n"
 
 .PHONY: setup-precommit
 setup-precommit:
