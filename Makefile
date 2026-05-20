@@ -13,6 +13,7 @@ help:
 	@printf "  make test            - 🧪  Run all tests\n"
 	@printf "  make test-cov        - 📊  Run tests with coverage report\n"
 	@printf "  make doc-check       - 📝  Check docstring coverage (interrogate)\n"
+	@printf "  make doc-verbose     - 📖  List all missing docstrings (interrogate -v)\n"
 	@printf "  make dead-code       - 💀  Find unused code (vulture)\n"
 	@printf "  make dep-check       - 📦  Check for dependency issues (deptry)\n"
 	@printf "  make quality         - 🏆  Run all quality checks at once\n"
@@ -60,6 +61,10 @@ test-cov:
 .PHONY: doc-check
 doc-check:
 	uv run interrogate src/verger
+
+.PHONY: doc-verbose
+doc-verbose:
+	uv run interrogate -v src/verger
 
 .PHONY: dead-code
 dead-code:
