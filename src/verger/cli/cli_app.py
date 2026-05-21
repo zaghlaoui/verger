@@ -51,7 +51,7 @@ def list_prompts():
 def tui():
     """Launch the Verger Terminal User Interface."""
     try:
-        from verger.tui.app import launch_tui
+        from verger.tui.tui_app import launch_tui
 
         launch_tui()
     except ImportError:

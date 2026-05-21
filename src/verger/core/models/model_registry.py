@@ -4,7 +4,7 @@ from typing import Any
 
 from verger.core.exceptions import VergerResolutionError
 
-from .base import ModelResolver, VergerModel
+from .model_base import ModelResolver, VergerModel
 
 
 class ModelRegistry:

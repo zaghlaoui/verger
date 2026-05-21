@@ -2,8 +2,9 @@
 
 This section documents internal utilities and the CLI entry points.
 
-## CLI Application
-::: verger.cli.app
+## CLI & TUI Applications
+::: verger.cli.cli_app
+::: verger.tui.tui_app
 ::: verger.main
 
 ## Utilities

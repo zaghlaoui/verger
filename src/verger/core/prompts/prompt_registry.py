@@ -4,7 +4,7 @@ from typing import Any
 
 from verger.core.exceptions import VergerResolutionError
 
-from .base import PromptResolver, VergerPrompt
+from .prompt_base import PromptResolver, VergerPrompt
 
 
 class PromptRegistry:

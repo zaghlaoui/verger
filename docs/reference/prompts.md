@@ -3,7 +3,7 @@
 This section documents the interfaces and adapters for AI prompts.
 
 ## Base Interfaces
-::: verger.core.prompts.base
+::: verger.core.prompts.prompt_base
 
 ## Registry
 ::: verger.core.prompts.prompt_registry

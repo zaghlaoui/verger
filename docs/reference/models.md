@@ -3,7 +3,7 @@
 This section documents the interfaces and adapters for AI models.
 
 ## Base Interfaces
-::: verger.core.models.base
+::: verger.core.models.model_base
 
 ## Registry
 ::: verger.core.models.model_registry
