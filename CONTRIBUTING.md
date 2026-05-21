@@ -29,12 +29,14 @@ Git hooks will run before every commit and check:
 
 - ✅ Code formatting (Ruff)
 - ✅ Linting issues (Ruff)
+- ✅ Code modernization (refurb)
 - ✅ Type checking (ty)
 - ✅ Spelling (codespell)
+- ✅ Documentation integrity (mkdocs)
 - ✅ General hygiene (whitespace, line endings, etc.)
 - ✅ Commit message format (Commitizen)
 - ✅ Security issues (Bandit & Detect-secrets)
-- ✅ Tests (pytest - runs on push)
+- ✅ Tests (pytest - runs on every commit)
 
 ## 📝 Commit Message Format
 
@@ -114,14 +116,20 @@ make lint
 # Run type checking
 make type-check
 
+# Suggest code modernizations
+make refurb
+
 # Run security checks
 make secure
 
-# Run tests with coverage report
+# Run tests with strict coverage enforcement
 make test-cov
 
-# Check docstring coverage
+# Check docstring coverage (100% required)
 make doc-check
+
+# Run strict documentation build
+make docs-build
 
 # Find unused code
 make dead-code
@@ -129,8 +137,11 @@ make dead-code
 # Check for dependency issues
 make dep-check
 
-# Or run all checks at once
+# Run all quality checks at once
 make quality
+
+# Run all pre-commit hooks manually
+make pre-commit
 ```
 
 ### Pre-commit Hooks
@@ -156,8 +167,11 @@ git commit --no-verify -m "emergency fix"
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run tests quickly without coverage
 make test
+
+# Run tests with strict coverage enforcement (min 48%)
+make test-cov
 
 # Run specific test file
 uv run pytest tests/core/config/test_loader.py
@@ -291,7 +305,7 @@ git push origin main
 
 - Update `README.md` for user-facing changes
 - Update files in `docs/` if the architecture or guides change
-- Use Google-style docstrings for public APIs
+- Use Google-style docstrings for public APIs. **100% docstring coverage is mandatory** (enforced by `interrogate`).
 
 ## 🐛 Reporting Bugs
 
