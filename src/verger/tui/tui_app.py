@@ -306,16 +306,15 @@ class VergerTUI(App):
         for text_area in self.query(TextArea):
             text = text_area.text
             if text:
-                try:
+                from contextlib import suppress
+
+                with suppress(ValueError):
                     variables = {
                         field_name
                         for _, field_name, _, _ in formatter.parse(text)
                         if field_name is not None
                     }
                     all_variables.update(variables)
-                except ValueError:
-                    # Ignore format string errors while typing
-                    pass
 
         await self._render_variable_inputs(all_variables)
 
@@ -329,11 +328,11 @@ class VergerTUI(App):
         container = self.query_one("#variable-inputs", VerticalScroll)
 
         # Save existing values
-        existing_values = {}
-        for input_widget in container.query(Input):
-            if input_widget.id:
-                var_name = input_widget.id.replace("var-", "")
-                existing_values[var_name] = input_widget.value
+        existing_values = {
+            input_widget.id.replace("var-", ""): input_widget.value
+            for input_widget in container.query(Input)
+            if input_widget.id
+        }
 
         await container.remove_children()
 
@@ -348,7 +347,11 @@ class VergerTUI(App):
             await container.mount(
                 Horizontal(
                     Label(f"{var}:", classes="input-label"),
-                    Input(value=value, placeholder=f"Enter value for {var}", id=f"var-{var}"),
+                    Input(
+                        value=value,
+                        placeholder=f"Enter value for {var}",
+                        id=f"var-{var}",
+                    ),
                     classes="input-row",
                 )
             )
@@ -373,9 +376,7 @@ class VergerTUI(App):
             return
 
         # Prepare tasks for concurrent execution
-        tasks = []
-        for pane in panes:
-            tasks.append(self._run_single_pane(pane, variables))
+        tasks = [self._run_single_pane(pane, variables) for pane in panes]
 
         # Run all panes concurrently
         await asyncio.gather(*tasks)

@@ -37,8 +37,5 @@ class ExecutionEngine:
         # 2. Resolve and load the prompt adapter
         prompt = prompt_registry.resolve(prompt_obj)
 
-        # 3. Format the prompt with variables
-        formatted_text = prompt.format(**(variables or {}))
-
-        # 4. Invoke the model and return the result
-        return await model.invoke(formatted_text, **kwargs)
+        # 3. Format the prompt and invoke the model
+        return await model.invoke(prompt.format(**(variables or {})), **kwargs)

@@ -67,13 +67,13 @@ def load_config(root_dir: Path | None = None) -> VergerConfig:
 
 def _load_from_file(path: Path) -> VergerConfig:
     """Helper to load a raw TOML file into VergerConfig."""
-    with open(path, "rb") as f:
+    with path.open("rb") as f:
         data = tomllib.load(f)
     return VergerConfig(**data)
 
 
 def _parse_pyproject(path: Path) -> dict | None:
     """Helper to extract [tool.verger] from pyproject.toml."""
-    with open(path, "rb") as f:
+    with path.open("rb") as f:
         data = tomllib.load(f)
     return data.get("tool", {}).get("verger")

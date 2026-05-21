@@ -40,6 +40,8 @@ dev = [
     "vulture>=2.16",
     "deptry>=0.25.1",
     "mkdocstrings[python]>=1.0.4",
+    "refurb>=2.3.1",
+    "pytest-picked>=0.5.1",
 ]
 
 [tool.commitizen]
@@ -76,7 +78,7 @@ ignore = []
 "tests/*" = ["S101"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=src/verger --cov-report=term-missing"
+addopts = "--cov=src/verger --cov-report=term-missing --cov-fail-under=47"
 testpaths = ["tests"]
 asyncio_mode = "strict"
 
@@ -91,7 +93,7 @@ ignore-module = false
 ignore-nested-functions = false
 ignore-nested-classes = false
 ignore-setters = false
-fail-under = 80
+fail-under = 100
 exclude = ["setup.py", "docs", "build", "tests"]
 ignore-regex = ["^__.*__$"]
 verbose = 0
@@ -103,7 +105,13 @@ omit-covered-files = false
 [tool.vulture]
 exclude = ["tests"]
 ignore_decorators = ["@app.command", "@app.callback"]
-ignore_names = ["main", "args", "kwargs"]
+ignore_names = [
+    "main", "args", "kwargs",
+    "compose", "on_mount", "on_button_pressed", "on_select_changed", "on_text_area_changed",
+    "TITLE", "CSS", "BINDINGS", "action_*",
+    "info", "list_prompts", "tui",
+    "get_id", "get_variables"
+]
 min_confidence = 80
 
 [tool.deptry]

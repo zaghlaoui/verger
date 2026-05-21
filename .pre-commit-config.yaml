@@ -53,7 +53,7 @@ repos:
     hooks:
       - id: codespell
 
-  # 6. Commit Message Linting
+  # 7. Commit Message Linting
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.16.2
     hooks:
@@ -61,7 +61,57 @@ repos:
       - id: commitizen-branch
         stages: [post-commit]
 
-  # 7. Testing
+  # 8. Documentation Coverage
+  - repo: local
+    hooks:
+      - id: interrogate
+        name: interrogate
+        entry: uv run interrogate src/verger
+        language: system
+        types: [python]
+        pass_filenames: false
+
+  # 9. API Reference & Docs Integrity
+  - repo: local
+    hooks:
+      - id: mkdocs-build
+        name: mkdocs-build
+        entry: uv run mkdocs build --strict
+        language: system
+        always_run: true
+        pass_filenames: false
+
+  # 10. Dead Code Detection
+  - repo: local
+    hooks:
+      - id: vulture
+        name: vulture
+        entry: uv run vulture src/verger
+        language: system
+        types: [python]
+        pass_filenames: false
+
+  # 11. Dependency Validation
+  - repo: local
+    hooks:
+      - id: deptry
+        name: deptry
+        entry: uv run deptry .
+        language: system
+        types: [python]
+        pass_filenames: false
+
+  # 12. Modernization Suggestions
+  - repo: local
+    hooks:
+      - id: refurb
+        name: refurb
+        entry: bash -c "export MYPYPATH=src && uv run refurb src/verger --python-version 3.12"
+        language: system
+        types: [python]
+        pass_filenames: false
+
+  # 13. Test Suite (Runs on every commit)
   - repo: local
     hooks:
       - id: pytest
@@ -70,4 +120,3 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        stages: [pre-push] # Run tests on push by default to save time on commits

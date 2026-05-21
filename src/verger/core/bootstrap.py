@@ -1,7 +1,7 @@
 """Initialization logic for setting up the Verger core."""
 
-import os
 import sys
+from pathlib import Path
 
 from verger.core.config.env import load_env
 from verger.core.config.loader import load_config
@@ -14,7 +14,7 @@ def setup_app():
     and discovering plugins.
     """
     # Inject Current Working Directory into sys.path so we can import user modules
-    cwd = os.getcwd()
+    cwd = str(Path.cwd())
     if cwd not in sys.path:
         sys.path.insert(0, cwd)
 
