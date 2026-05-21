@@ -108,3 +108,4 @@ min_confidence = 80
 
 [tool.deptry]
 exclude = ["tests", "docs", ".venv"]
+known_first_party = ["verger"]
