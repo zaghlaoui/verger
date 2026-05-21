@@ -9,4 +9,4 @@ This section documents the interfaces and adapters for AI prompts.
 ::: verger.core.prompts.prompt_registry
 
 ## Built-in Adapters
-::: verger.core.prompts.adapters.string
+::: verger.core.prompts.adapters.string_adapter

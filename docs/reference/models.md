@@ -9,5 +9,5 @@ This section documents the interfaces and adapters for AI models.
 ::: verger.core.models.model_registry
 
 ## Built-in Adapters
-::: verger.core.models.adapters.langchain
-::: verger.core.models.adapters.native
+::: verger.core.models.adapters.langchain_adapter
+::: verger.core.models.adapters.native_adapter
