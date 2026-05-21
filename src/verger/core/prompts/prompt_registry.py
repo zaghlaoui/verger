@@ -23,10 +23,13 @@ class PromptRegistry:
         """
         Register a new prompt resolver.
 
+        The registry automatically sorts resolvers by priority (lower numbers first).
+
         Args:
             resolver: The PromptResolver instance to add to the registry.
         """
         self._resolvers.append(resolver)
+        self._resolvers.sort(key=lambda r: getattr(r, "priority", 50))
 
     def resolve(self, obj: Any) -> VergerPrompt:
         """

@@ -49,6 +49,8 @@ class LangChainResolver(ModelResolver):
     to be installed as a mandatory dependency of Verger.
     """
 
+    priority: int = 20
+
     def can_handle(self, obj: Any) -> bool:
         """
         Check if the object is a LangChain runnable.

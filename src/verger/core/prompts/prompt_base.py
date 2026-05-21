@@ -37,6 +37,9 @@ class PromptResolver(Protocol):
     It knows how to wrap a specific type of prompt object (e.g., String, LangChain Template, etc.)
     """
 
+    priority: int = 50
+    """Priority of the resolver (lower numbers are checked first)."""
+
     def can_handle(self, obj: Any) -> bool:
         """Return True if this resolver recognizes the object format."""
         ...

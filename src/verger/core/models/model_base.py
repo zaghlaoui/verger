@@ -22,6 +22,9 @@ class ModelResolver(Protocol):
     user object, and how to create the adapter for it.
     """
 
+    priority: int = 50
+    """Priority of the resolver (lower numbers are checked first)."""
+
     def can_handle(self, obj: Any) -> bool:
         """Return True if this resolver recognizes the object's framework."""
         ...

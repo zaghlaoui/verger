@@ -43,6 +43,38 @@ def test_model_registry_resolution_failure():
         test_registry.resolve("unknown_obj")
 
 
+def test_model_registry_priority_sorting():
+    """Test that the registry respects resolver priority."""
+    from verger.core.models.model_registry import ModelRegistry
+
+    test_registry = ModelRegistry()
+
+    # Resolver 1: Generic (Low Priority)
+    low_priority_resolver = MagicMock(spec=ModelResolver)
+    low_priority_resolver.can_handle.return_value = True
+    low_priority_resolver.priority = 100
+    low_adapter = MagicMock(spec=VergerModel)
+    low_priority_resolver.create_adapter.return_value = low_adapter
+
+    # Resolver 2: Expert (High Priority)
+    high_priority_resolver = MagicMock(spec=ModelResolver)
+    high_priority_resolver.can_handle.return_value = True
+    high_priority_resolver.priority = 10
+    high_adapter = MagicMock(spec=VergerModel)
+    high_priority_resolver.create_adapter.return_value = high_adapter
+
+    # Register in reverse order
+    test_registry.register(low_priority_resolver)
+    test_registry.register(high_priority_resolver)
+
+    resolved = test_registry.resolve("some_obj")
+
+    # Should pick high priority even though it was registered second
+    assert resolved == high_adapter
+    high_priority_resolver.create_adapter.assert_called_once()
+    low_priority_resolver.create_adapter.assert_not_called()
+
+
 def test_singleton_registry_instance():
     """Ensure that the exported model_registry is a singleton instance of ModelRegistry."""
     from verger.core.models.model_registry import ModelRegistry

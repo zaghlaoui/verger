@@ -48,6 +48,8 @@ class NativeFunctionResolver(ModelResolver):
     fallback (last in the list).
     """
 
+    priority: int = 100
+
     def can_handle(self, obj: Any) -> bool:
         """
         Check if the object is callable.

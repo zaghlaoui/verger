@@ -76,6 +76,8 @@ class NativeStringResolver(PromptResolver):
     Adapter that recognizes native Python strings and wraps them.
     """
 
+    priority: int = 100
+
     def can_handle(self, obj: Any) -> bool:
         """
         Check if the object is a string.
