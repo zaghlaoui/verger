@@ -34,6 +34,14 @@ theme:
 plugins:
   - search
   - include-markdown
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            show_root_toc_entry: true
 
 extra:
   generator: false
@@ -51,6 +59,11 @@ nav:
   - User Guide:
       - Configuration: guide/config.md
       - CLI Usage: guide/cli.md
+  - API Reference:
+      - Core Engine: reference/core.md
+      - Models & Adapters: reference/models.md
+      - Prompts & Adapters: reference/prompts.md
+      - Utilities & CLI: reference/utils.md
   - Architecture:
       - Overview: architecture/overview.md
   - Contributing: contributing.md
