@@ -1,51 +1,101 @@
-# Verger Project Memory
+# Verger: AI Agent Project Memory
 
-## Overview
-**Verger** is a framework-agnostic tool for evaluating AI prompts and models directly from a Python codebase. It uses static analysis (AST) for prompts and dynamic loading for models, providing a side-by-side comparison TUI.
+> **System Prompt Addendum**: This file is the source of truth for all AI agents working on Verger. It defines the architecture, standards, and conventions that must be strictly followed.
+
+## 🎯 Overview
+**Verger** is a framework-agnostic tool for evaluating AI prompts and models. It allows developers to define and compare different AI configurations (models, prompts, and eventually tools) through a central configuration file and an interactive TUI.
+
+---
 
 ## 🏗 Architecture
-Verger follows a strict three-tier architecture to ensure modularity and extensibility.
+Verger follows a strict three-tier decoupled architecture centered around a configuration-driven resolution system.
 
 ### 1. Core Layer (`src/verger/core/`)
-The "Brain" of the application, completely decoupled from any UI.
-- **Bootstrap Phase**: Sequential initialization (`.env` → `config` → `plugins`).
-- **Registry Pattern**: Centralized registries for both Models and Prompts.
-- **Adapter Pattern**: Frameworks (LangChain, PydanticAI) are wrapped in unified interfaces (`VergerModel`, `VergerPrompt`).
-- **Plugin System**: Uses **Auto-Scanning** via `pkgutil` to discover all resolvers in the `adapters/` directories. This allows for zero-config extension by simply adding a new file.
-- **AST Loader**: Uses `ast` to read/write string variables in source code without execution.
+- **Bootstrap Phase**: Sequential initialization via `bootstrap.py` (`.env` → `config` → `plugins`).
+- **Configuration Loader**: Reads from `verger.toml` or `pyproject.toml`. Users define named references to models and prompts here.
+- **Registry Pattern**: Centralized hubs for Models and Prompts (`model_registry.py`, `prompt_registry.py`).
+- **Adapter Pattern**: Frameworks (LangChain, etc.) and native objects are wrapped in unified interfaces (`VergerModel`, `VergerPrompt`).
+- **Plugin System**: Auto-scanning of `adapters/` directories via `pkgutil` for discovery of resolvers.
 
 ### 2. CLI Layer (`src/verger/cli/`)
-Built with **Typer**.
-- Provides commands for listing, running, and managing prompts/models.
-- Uses `@app.callback()` to trigger the Core bootstrap.
+- Built with **Typer**. Handles configuration inspection and TUI launch.
 
 ### 3. TUI Layer (`src/verger/tui/`)
-Built with **Textual**.
-- Interactive environment for real-time prompt editing and side-by-side model evaluation.
+- Built with **Textual**. Provides a side-by-side evaluation environment with reactive variable detection based on `string.Formatter`.
 
 ---
 
-## 🛠 Design Decisions & Patterns
-- **Framework Agnostic**: Do not make LangChain a first-class citizen. Use adapters to remain compatible with any future LLM framework.
-- **Duck-Typing Resolvers**: Resolvers (like `LangChainResolver`) check object structures/module names to avoid importing heavy dependencies into the Verger core.
-- **Async First**: All model invocations are `async` to support parallel evaluation.
-- **UV for Dev**: Use `uv` for dependency management and `uv run` for execution.
+## 🔍 Code Quality Standards (The "Strict Gates")
+We maintain a "Max Quality" baseline. Every commit is gated by 14+ automated checks.
+
+### 1. Testing & Coverage
+- **Enforcement**: `pytest` runs on every commit.
+- **Baseline**: Minimum **48.5%** test coverage required (enforced by `pytest-cov`).
+- **Fast Loop**: `make test` (no coverage) for development; `make test-cov` for verification.
+
+### 2. Documentation
+- **Coverage**: **100% docstring coverage** required (enforced by `interrogate`).
+- **Integrity**: `mkdocs build --strict` must pass (no broken API references).
+
+### 3. Static Analysis
+- **Modernization**: `refurb` suggests modern Python idioms.
+- **Dead Code**: `vulture` find unused code (respecting framework entry points).
+- **Dependencies**: `deptry` validates `pyproject.toml` against actual imports.
 
 ---
 
-## 🚦 Current State
-- [x] Project scaffolding and directory structure.
-- [x] Core Bootstrap and Plugin Discovery system.
-- [x] Model Registry and Native/LangChain Adapters.
-- [x] Prompt Registry and AST-based Native String Resolver.
-- [x] MkDocs documentation skeleton (Material theme).
-- [ ] Configuration Loader (parsing `pyproject.toml`).
-- [ ] Model Loader (dynamic import logic).
-- [ ] Runner Engine (execution logic).
-- [ ] TUI Implementation.
+## 📖 Documentation Style Guidelines
+All documentation must follow the **Google Style** and match the precision of `model_registry.py`.
 
-## 📖 Conventions
-- **Imports**: Use absolute imports (`from verger.core...`).
-- **Testing**: Use `pytest`. Add tests for every new resolver.
-- **Documentation**: All public logic should be reflected in `docs/`.
-- **Coding Style**: Strict adherence to `ruff` formatting and linting.
+### 1. Module Level
+Every file must start with a high-level docstring describing its specific purpose.
+
+### 2. Class Level
+Summary line followed by a detailed paragraph explaining the class's role in the system.
+
+### 3. Method Level
+Must include:
+- **Summary**: Brief description of the action.
+- **Args**: Typed list of parameters.
+- **Returns**: Description of the return value and type.
+- **Raises**: Explicit list of possible exceptions.
+
+**Example Pattern:**
+```python
+def example_method(self, value: str) -> bool:
+    """
+    Brief summary of the method.
+
+    Detailed explanation of logic or side effects.
+
+    Args:
+        value: The input string to process.
+
+    Returns:
+        True if processing succeeded, False otherwise.
+
+    Raises:
+        ValueError: If value is empty.
+    """
+```
+
+---
+
+## 🛠 Development Workflow
+1.  **Work**: Make changes in `src/`.
+2.  **Verify**: Run `make quality` (runs all 8 core checks).
+3.  **Commit**: Use `make cz` or `git commit` to trigger the 14 pre-commit hooks.
+4.  **Style**: Use **Conventional Commits** (`feat:`, `fix:`, `refactor:`, `docs:`, `build:`, `chore:`).
+
+---
+
+## 🚦 Current State & Milestones
+- [x] Core Architecture & Registries.
+- [x] Multi-provider Adapter System (Native, LangChain).
+- [x] Configuration Loader (TOML/Pyproject).
+- [x] Terminal User Interface (TUI) with side-by-side comparison.
+- [x] Strict Quality Pipeline (Pre-commit hooks).
+- [x] 100% Docstring Coverage.
+- [ ] Tool Plugins & Registry (Not yet implemented).
+- [ ] Comprehensive CLI Test Suite (Coverage Gap).
+- [ ] TUI Unit/Integration Tests.
