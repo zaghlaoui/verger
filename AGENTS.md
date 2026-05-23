@@ -96,6 +96,6 @@ def example_method(self, value: str) -> bool:
 - [x] Terminal User Interface (TUI) with side-by-side comparison.
 - [x] Strict Quality Pipeline (Pre-commit hooks).
 - [x] 100% Docstring Coverage.
-- [ ] Tool Plugins & Registry (Not yet implemented).
+- [x] Tool Plugins & Registry.
 - [ ] Comprehensive CLI Test Suite (Coverage Gap).
 - [ ] TUI Unit/Integration Tests.

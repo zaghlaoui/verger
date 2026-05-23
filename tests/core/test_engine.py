@@ -44,14 +44,28 @@ async def test_engine_run_with_missing_variables(mock_user_project):
 
 
 @pytest.mark.asyncio
-async def test_engine_run_no_variables(mock_user_project):
-    """Test engine run when no variables are provided (raw prompt)."""
-    raw_prompt = "This is a plain prompt."
+async def test_engine_run_with_tools(mock_user_project):
+    """Test that tools are resolved and passed to the model function."""
+    raw_prompt = "Use the tool."
+
+    def tool_func(x: int) -> int:
+        """A simple tool."""
+        return x * 2
+
+    def mock_model_with_tools(prompt: str, tools: list | None = None) -> str:
+        if tools and len(tools) > 0:
+            tool_name = tools[0].name
+            return f"Model ran with tool: {tool_name}"
+        return "Model ran without tools"
 
     engine = ExecutionEngine()
-    result = await engine.run(model_obj=lambda x: f"GOT: {x}", prompt_obj=raw_prompt)
+    result = await engine.run(
+        model_obj=mock_model_with_tools,
+        prompt_obj=raw_prompt,
+        tools=[tool_func],
+    )
 
-    assert result == "GOT: This is a plain prompt."
+    assert result == "Model ran with tool: tool_func"
 
 
 def test_prompt_variable_discovery(mock_user_project):

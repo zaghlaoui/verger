@@ -2,6 +2,8 @@
 
 from typing import Any, Protocol, runtime_checkable
 
+from verger.core.tools.tool_base import VergerTool
+
 
 @runtime_checkable
 class VergerModel(Protocol):
@@ -12,12 +14,18 @@ class VergerModel(Protocol):
     ensuring framework independence.
     """
 
-    async def invoke(self, prompt: str, **kwargs: Any) -> str:
+    async def invoke(
+        self,
+        prompt: str,
+        tools: list[VergerTool] | None = None,
+        **kwargs: Any,
+    ) -> str:
         """
         Run the prompt through the model and return the string result.
 
         Args:
             prompt: The formatted prompt string to send to the model.
+            tools: An optional list of VergerTool adapters available to the model.
             **kwargs: Additional model-specific parameters (e.g., temperature).
 
         Returns:

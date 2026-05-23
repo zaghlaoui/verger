@@ -5,6 +5,7 @@ from collections.abc import Callable
 from typing import Any
 
 from verger.core.models import ModelResolver, VergerModel
+from verger.core.tools.tool_base import VergerTool
 
 
 class NativeFunctionAdapter(VergerModel):
@@ -24,17 +25,36 @@ class NativeFunctionAdapter(VergerModel):
         """
         self.func = func
 
-    async def invoke(self, prompt: str, **kwargs: Any) -> str:
+    async def invoke(
+        self,
+        prompt: str,
+        tools: list[VergerTool] | None = None,
+        **kwargs: Any,
+    ) -> str:
         """
         Invoke the native function with the given prompt.
 
         Args:
             prompt: The formatted prompt string.
+            tools: Optional list of tools (passed if the function signature allows it).
             **kwargs: Additional parameters (ignored by default for native functions).
 
         Returns:
             The string result returned by the function.
         """
+        # If the function accepts a 'tools' argument, we pass it.
+        # Otherwise, we just pass the prompt.
+        import inspect
+        from typing import cast
+
+        sig = inspect.signature(self.func)
+        if "tools" in sig.parameters:
+            if asyncio.iscoroutinefunction(self.func):
+                func = cast(Callable[..., Any], self.func)
+                return await func(prompt, tools=tools)
+            func = cast(Callable[..., Any], self.func)
+            return str(func(prompt, tools=tools))
+
         if asyncio.iscoroutinefunction(self.func):
             return await self.func(prompt)
         return str(self.func(prompt))

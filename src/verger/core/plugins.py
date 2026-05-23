@@ -6,6 +6,7 @@ import pkgutil
 
 from verger.core.models import model_registry
 from verger.core.prompts import prompt_registry
+from verger.core.tools import tool_registry
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ def load_plugins():
     """Entry point to load all internal adapters."""
     _register_model_adapters()
     _register_prompt_adapters()
+    _register_tool_adapters()
 
 
 def _register_model_adapters():
@@ -42,3 +44,17 @@ def _register_prompt_adapters():
                 logger.debug(f"Registered prompt resolver from {name}")
         except Exception as e:
             logger.error(f"Failed to load prompt adapter {name}: {e}")
+
+
+def _register_tool_adapters():
+    """Automatically loads and registers all tool resolvers from the adapters directory."""
+    import verger.core.tools.adapters as pkg
+
+    for _, name, _ in pkgutil.iter_modules(pkg.__path__, pkg.__name__ + "."):
+        try:
+            module = importlib.import_module(name)
+            if hasattr(module, "get_resolver"):
+                tool_registry.register(module.get_resolver())
+                logger.debug(f"Registered tool resolver from {name}")
+        except Exception as e:
+            logger.error(f"Failed to load tool adapter {name}: {e}")
