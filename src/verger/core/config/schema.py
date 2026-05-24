@@ -12,10 +12,20 @@ class ModelConfig(BaseModel):
     params: dict[str, Any] = Field(default_factory=dict)
 
 
+class RuntimeStatus(BaseModel):
+    """Internal state tracking for the Verger execution environment."""
+
+    config_source: str = "Unknown"
+    env_keys: list[str] = Field(default_factory=list)
+
+
 class VergerConfig(BaseModel):
     """The main [tool.verger] configuration schema."""
 
     env_file: str | None = ".env"
+
+    # Runtime status (not loaded from TOML)
+    status: RuntimeStatus = Field(default_factory=RuntimeStatus, exclude=True)
 
     # Prompts are currently just a name mapped to a reference string
     prompts: dict[str, str] = Field(default_factory=dict)

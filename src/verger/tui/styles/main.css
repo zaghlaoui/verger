@@ -127,6 +127,12 @@ ConfigPane {
     color: $accent;
 }
 
+.detail-sublabel {
+    margin-top: 1;
+    margin-left: 2;
+    color: $text-muted;
+}
+
 .detail-value {
     margin-bottom: 1;
     padding-left: 2;

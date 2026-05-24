@@ -19,10 +19,12 @@ def setup_app():
         sys.path.insert(0, cwd)
 
     # Step 1: Load configuration
-    load_config()
+    config = load_config()
 
     # Step 2: Load environment variables (based on env_file in config)
-    load_env()
+    env_keys = load_env()
+    # Store the keys that were actually loaded from the file
+    config.status.env_keys = env_keys
 
     # Step 3: Discover plugins
     load_plugins()
