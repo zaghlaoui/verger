@@ -23,6 +23,9 @@ class VergerConfig(BaseModel):
     # Models can be a simple reference string or a detailed ModelConfig object
     models: dict[str, str | ModelConfig] = Field(default_factory=dict)
 
+    # Tools are currently just a name mapped to a reference string
+    tools: dict[str, str] = Field(default_factory=dict)
+
     def get_model_ref(self, model_name: str) -> str:
         """Helper to get the string reference for a model regardless of its config style."""
         config = self.models.get(model_name)
