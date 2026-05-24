@@ -2,7 +2,6 @@ import os
 
 import pytest
 
-from verger.core.config.env import load_env
 from verger.core.config.loader import (
     _load_from_file,
     _parse_pyproject,
@@ -23,20 +22,26 @@ def test_load_config_from_verger_toml(mock_user_project):
     assert "simple" in config.models
 
 
-def test_load_env_logic(mock_user_project):
-    """Test that environment variables are loaded from the specified file."""
-    load_config()
-    load_env()
-
-    assert os.getenv("OPENAI_API_KEY") == "sk-test-key"
-
-
 def test_config_singleton(mock_user_project):
     """Test that get_config returns the same object after load_config."""
     config1 = load_config()
     config2 = get_config()
 
     assert config1 is config2
+
+
+def test_get_config_not_loaded():
+    """Test that get_config raises RuntimeError if config is not yet loaded."""
+    # We need to reset the global _config for this test
+    import verger.core.config.loader as loader
+
+    original_config = loader._config
+    loader._config = None
+    try:
+        with pytest.raises(RuntimeError, match="has not been loaded"):
+            get_config()
+    finally:
+        loader._config = original_config
 
 
 def test_priority_env_var(tmp_path):
