@@ -26,6 +26,7 @@ from textual.widgets import (
 from verger.core.config.loader import get_config
 from verger.core.engine import ExecutionEngine
 from verger.tui.panes.config_pane import ConfigPane
+from verger.tui.panes.models_pane import ModelsPane
 from verger.tui.panes.prompts_pane import PromptsPane
 from verger.utils.imports import import_reference
 
@@ -90,6 +91,9 @@ class VergerTUI(App):
 
             with TabPane("Prompts", id="tab-prompts"):
                 yield PromptsPane(app_ref=self)
+
+            with TabPane("Models", id="tab-models"):
+                yield ModelsPane(app_ref=self)
 
         yield Footer()
 
