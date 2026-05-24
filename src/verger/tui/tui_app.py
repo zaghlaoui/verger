@@ -1,11 +1,12 @@
 """
 Verger Terminal User Interface.
 
-Provides a side-by-side comparison environment for AI models and prompts.
+Main application module for the Verger TUI.
 """
 
 import asyncio
 import string
+from pathlib import Path
 from typing import Any, cast
 
 from textual.app import App, ComposeResult
@@ -14,90 +15,8 @@ from textual.widgets import Button, Footer, Header, Input, Label, Select, TextAr
 
 from verger.core.config.loader import get_config
 from verger.core.engine import ExecutionEngine
-from verger.core.prompts import prompt_registry
+from verger.tui.panes.config_pane import ConfigPane
 from verger.utils.imports import import_reference
-
-
-class ConfigPane(Vertical):
-    """
-    A single configuration pane.
-
-    Contains model selection, prompt preset selection, an editable prompt text area,
-    and a display for the model's output.
-    """
-
-    def __init__(self, pane_id: int, app_ref: "VergerTUI", **kwargs: Any):
-        """
-        Initialize the configuration pane.
-
-        Args:
-            pane_id: Unique numerical ID for this pane.
-            app_ref: Reference to the parent TUI application.
-            **kwargs: Additional parameters for the Vertical container.
-        """
-        super().__init__(**kwargs)
-        self.pane_id = pane_id
-        self.app_ref = app_ref
-        self.border_title = f"Configuration {pane_id}"
-
-    def compose(self) -> ComposeResult:
-        """
-        Build the UI structure for the configuration pane.
-
-        Yields:
-            The widgets that make up the pane.
-        """
-        model_options = [(name, name) for name in self.app_ref.config.models.keys()]
-        prompt_options = [(name, ref) for name, ref in self.app_ref.config.prompts.items()]
-
-        with Horizontal(classes="pane-selectors"):
-            yield Select(
-                model_options,
-                prompt="Model",
-                id=f"model-select-{self.pane_id}",
-                classes="pane-select",
-            )
-            yield Select(
-                prompt_options,
-                prompt="Preset",
-                id=f"prompt-select-{self.pane_id}",
-                classes="pane-select",
-            )
-        yield Label("Edit Prompt:", classes="pane-label")
-        yield TextArea(id=f"prompt-text-{self.pane_id}", classes="pane-textarea")
-        yield Label("Output:", classes="pane-label")
-        yield TextArea(id=f"output-display-{self.pane_id}", classes="pane-output", read_only=True)
-
-    def on_select_changed(self, event: Select.Changed) -> None:
-        """
-        Handle preset selection to populate the text area.
-
-        Args:
-            event: The selection change event.
-        """
-        if event.select.id == f"prompt-select-{self.pane_id}" and event.value != Select.BLANK:
-            try:
-                # Load the raw prompt object from the reference
-                prompt_obj = import_reference(cast(str, event.value))
-                # Resolve it to a VergerPrompt adapter to get its text
-                prompt = prompt_registry.resolve(prompt_obj)
-
-                # Update the text area
-                text_area = self.query_one(f"#prompt-text-{self.pane_id}", TextArea)
-                text_area.text = prompt.get_text()
-
-            except Exception as e:
-                self.app_ref.notify(f"Error loading preset: {e}", severity="error")
-
-    def on_text_area_changed(self, event: TextArea.Changed) -> None:
-        """
-        Notify the app to update shared variables when text area changes.
-
-        Args:
-            event: The text area change event.
-        """
-        # Using a small delay to avoid excessive parsing while typing
-        self.app_ref.schedule_variable_update()
 
 
 class VergerTUI(App):
@@ -109,111 +28,7 @@ class VergerTUI(App):
     """
 
     TITLE = "Verger: The AI Weaver"
-    CSS = """
-    Screen {
-        layout: vertical;
-    }
-
-    #top-half {
-        height: 1fr;
-        min-height: 15;
-        border-bottom: solid $primary;
-    }
-
-    #panes-container {
-        height: 100%;
-    }
-
-    ConfigPane {
-        width: 45;
-        height: 100%;
-        border: solid green;
-        margin: 0 1;
-        padding: 0;
-    }
-
-    .pane-selectors {
-        height: 3;
-        margin: 0;
-        padding: 0;
-    }
-
-    .pane-select {
-        width: 1fr;
-        height: 3;
-        margin: 0;
-        padding: 0;
-    }
-
-    .pane-label {
-        height: 1;
-        margin: 0 0 0 1;
-        padding: 0;
-        color: $text-muted;
-    }
-
-    .pane-textarea {
-        height: 1fr;
-        margin: 0;
-        padding: 0;
-    }
-
-    .pane-output {
-        height: 1fr;
-        margin: 0;
-        padding: 0;
-    }
-
-    #add-pane-container {
-        width: 25;
-        height: 100%;
-        border: dashed $success;
-        align: center middle;
-        margin: 0 1;
-        padding: 0;
-    }
-
-    #bottom-half {
-        height: auto;
-        max-height: 30%;
-        padding: 0 1;
-    }
-
-    .input-row {
-        height: 3;
-        margin: 0;
-    }
-
-    .input-label {
-        width: 15;
-        content-align: right middle;
-        margin-right: 1;
-    }
-
-    #action-buttons {
-        height: 3;
-        margin: 0;
-        padding: 0;
-    }
-
-    #run-btn {
-        width: 1fr;
-        height: 3;
-        margin: 0 1 0 0;
-    }
-
-    #add-pane-btn-bottom {
-        width: 20;
-        height: 3;
-        margin: 0;
-    }
-
-    #status-label {
-        color: $text-muted;
-        height: 1;
-        margin: 0 0 0 1;
-    }
-    """
+    CSS_PATH = Path(__file__).parent / "styles" / "main.css"
 
     BINDINGS = [
         ("q", "quit", "Quit"),

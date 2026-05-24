@@ -1,0 +1,103 @@
+Screen {
+    layout: vertical;
+}
+
+#top-half {
+    height: 1fr;
+    min-height: 15;
+    border-bottom: solid $primary;
+}
+
+#panes-container {
+    height: 100%;
+}
+
+ConfigPane {
+    width: 45;
+    height: 100%;
+    border: solid green;
+    margin: 0 1;
+    padding: 0;
+}
+
+.pane-selectors {
+    height: 3;
+    margin: 0;
+    padding: 0;
+}
+
+.pane-select {
+    width: 1fr;
+    height: 3;
+    margin: 0;
+    padding: 0;
+}
+
+.pane-label {
+    height: 1;
+    margin: 0 0 0 1;
+    padding: 0;
+    color: $text-muted;
+}
+
+.pane-textarea {
+    height: 1fr;
+    margin: 0;
+    padding: 0;
+}
+
+.pane-output {
+    height: 1fr;
+    margin: 0;
+    padding: 0;
+}
+
+#add-pane-container {
+    width: 25;
+    height: 100%;
+    border: dashed $success;
+    align: center middle;
+    margin: 0 1;
+    padding: 0;
+}
+
+#bottom-half {
+    height: auto;
+    max-height: 30%;
+    padding: 0 1;
+}
+
+.input-row {
+    height: 3;
+    margin: 0;
+}
+
+.input-label {
+    width: 15;
+    content-align: right middle;
+    margin-right: 1;
+}
+
+#action-buttons {
+    height: 3;
+    margin: 0;
+    padding: 0;
+}
+
+#run-btn {
+    width: 1fr;
+    height: 3;
+    margin: 0 1 0 0;
+}
+
+#add-pane-btn-bottom {
+    width: 20;
+    height: 3;
+    margin: 0;
+}
+
+#status-label {
+    color: $text-muted;
+    height: 1;
+    margin: 0 0 0 1;
+}

@@ -1,5 +1,7 @@
 """Pydantic schemas for Verger configuration."""
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -7,7 +9,7 @@ class ModelConfig(BaseModel):
     """Configuration for an AI model."""
 
     ref: str
-    # Future fields: provider, temperature, etc. can be added here.
+    params: dict[str, Any] = Field(default_factory=dict)
 
 
 class VergerConfig(BaseModel):
