@@ -11,11 +11,22 @@ from typing import Any, cast
 
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, HorizontalScroll, Vertical, VerticalScroll
-from textual.widgets import Button, Footer, Header, Input, Label, Select, TextArea
+from textual.widgets import (
+    Button,
+    Footer,
+    Header,
+    Input,
+    Label,
+    Select,
+    TabbedContent,
+    TabPane,
+    TextArea,
+)
 
 from verger.core.config.loader import get_config
 from verger.core.engine import ExecutionEngine
 from verger.tui.panes.config_pane import ConfigPane
+from verger.tui.panes.prompts_pane import PromptsPane
 from verger.utils.imports import import_reference
 
 
@@ -58,22 +69,27 @@ class VergerTUI(App):
         """
         yield Header()
 
-        # TOP HALF: Horizontal Scroll for Configuration Panes
-        with Vertical(id="top-half"):
-            with HorizontalScroll(id="panes-container"):
-                # We will mount panes here dynamically
-                with Vertical(id="add-pane-container"):
-                    yield Label("Add another\nconfiguration pane", id="add-pane-label")
-                    yield Button("+ Add Pane", id="add-pane-btn", variant="success")
+        with TabbedContent():
+            with TabPane("Playground", id="tab-playground"):
+                # TOP HALF: Horizontal Scroll for Configuration Panes
+                with Vertical(id="top-half"):
+                    with HorizontalScroll(id="panes-container"):
+                        # We will mount panes here dynamically
+                        with Vertical(id="add-pane-container"):
+                            yield Label("Add another\nconfiguration pane", id="add-pane-label")
+                            yield Button("+ Add Pane", id="add-pane-btn", variant="success")
 
-        # BOTTOM HALF: Shared Variables and Run Button
-        with Vertical(id="bottom-half"):
-            yield Label("[b]Shared Variables[/b]")
-            yield VerticalScroll(id="variable-inputs")
-            with Horizontal(id="action-buttons"):
-                yield Button("Run All Configurations (r)", variant="primary", id="run-btn")
-                yield Button("+ Add Pane (a)", id="add-pane-btn-bottom", variant="success")
-            yield Label("", id="status-label")
+                # BOTTOM HALF: Shared Variables and Run Button
+                with Vertical(id="bottom-half"):
+                    yield Label("[b]Shared Variables[/b]")
+                    yield VerticalScroll(id="variable-inputs")
+                    with Horizontal(id="action-buttons"):
+                        yield Button("Run All Configurations (r)", variant="primary", id="run-btn")
+                        yield Button("+ Add Pane (a)", id="add-pane-btn-bottom", variant="success")
+                    yield Label("", id="status-label")
+
+            with TabPane("Prompts", id="tab-prompts"):
+                yield PromptsPane(app_ref=self)
 
         yield Footer()
 

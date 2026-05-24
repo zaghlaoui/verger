@@ -101,3 +101,45 @@ ConfigPane {
     height: 1;
     margin: 0 0 0 1;
 }
+
+/* Sidebar and Details View */
+.sidebar {
+    width: 30;
+    height: 100%;
+    border-right: solid $primary;
+    background: $panel;
+}
+
+.sidebar-title {
+    padding: 1 2;
+    background: $primary;
+    color: $text;
+}
+
+.details-view {
+    width: 1fr;
+    height: 100%;
+    padding: 1 2;
+}
+
+.detail-label {
+    margin-top: 1;
+    color: $accent;
+}
+
+.detail-value {
+    margin-bottom: 1;
+    padding-left: 2;
+}
+
+.detail-textarea {
+    height: 1fr;
+    border: solid $primary;
+}
+
+#prompt-details-placeholder {
+    width: 100%;
+    height: 100%;
+    content-align: center middle;
+    color: $text-muted;
+}
