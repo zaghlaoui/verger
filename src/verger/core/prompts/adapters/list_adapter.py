@@ -25,9 +25,14 @@ class NativeListPrompt(VergerPrompt):
         Args:
             messages: A list of dictionaries representing messages.
         """
-        self.message_templates = [
-            VergerMessage(role=MessageRole(m["role"]), content=m["content"]) for m in messages
-        ]
+        try:
+            self.message_templates = [
+                VergerMessage(role=MessageRole(m["role"]), content=m["content"]) for m in messages
+            ]
+        except ValueError as e:
+            raise ValueError(f"Invalid message role in list prompt: {e}") from e
+        except KeyError as e:
+            raise KeyError(f"Missing required key in list prompt: {e}") from e
 
     def get_messages(self) -> list[VergerMessage]:
         """

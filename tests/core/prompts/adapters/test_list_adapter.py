@@ -1,3 +1,5 @@
+import pytest
+
 from verger.core.prompts.adapters.list_adapter import NativeListPrompt, NativeListResolver
 from verger.core.schema import MessageRole
 
@@ -56,3 +58,23 @@ def test_list_resolver():
 
     adapter = resolver.create_adapter(valid_list)
     assert isinstance(adapter, NativeListPrompt)
+
+
+def test_list_prompt_invalid_role():
+    """Test that NativeListPrompt raises ValueError for unknown roles."""
+    invalid_messages = [{"role": "invalid", "content": "hi"}]
+    with pytest.raises(ValueError):
+        NativeListPrompt(invalid_messages)
+
+
+def test_list_prompt_missing_key():
+    """Test that NativeListPrompt raises KeyError for missing keys in dict."""
+    invalid_messages = [{"role": "user"}]  # Missing 'content'
+    with pytest.raises(KeyError):
+        NativeListPrompt(invalid_messages)  # type: ignore
+
+
+def test_list_prompt_id():
+    """Test that NativeListPrompt generates a unique ID."""
+    prompt = NativeListPrompt([{"role": "user", "content": "hi"}])
+    assert "ListPrompt-" in prompt.get_id()

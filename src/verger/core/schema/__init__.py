@@ -3,6 +3,8 @@
 from .config import ModelConfig, RuntimeStatus, VergerConfig
 from .messages import MessageRole, VergerMessage
 from .metadata import CollaborationMetadata, Comment
+from .models import ModelSnapshot
+from .prompts import PromptSnapshot
 
 __all__ = [
     "ModelConfig",
@@ -12,4 +14,6 @@ __all__ = [
     "VergerMessage",
     "CollaborationMetadata",
     "Comment",
+    "ModelSnapshot",
+    "PromptSnapshot",
 ]
