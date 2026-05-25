@@ -13,11 +13,18 @@ Screen {
 }
 
 ConfigPane {
-    width: 45;
+    width: 60;
     height: 100%;
     border: solid green;
     margin: 0 1;
     padding: 0;
+}
+
+.messages-scroll {
+    height: 1fr;
+    min-height: 10;
+    border: inner $primary;
+    background: $surface;
 }
 
 .pane-selectors {

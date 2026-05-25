@@ -30,6 +30,7 @@ from verger.tui.panes.models_pane import ModelsPane
 from verger.tui.panes.prompts_pane import PromptsPane
 from verger.tui.panes.status_pane import StatusPane
 from verger.tui.panes.tools_pane import ToolsPane
+from verger.tui.widgets.message_block import MessageBlock
 from verger.utils.imports import import_reference
 
 
@@ -141,13 +142,13 @@ class VergerTUI(App):
         self._update_timer = self.set_timer(0.5, self._extract_and_update_variables)
 
     async def _extract_and_update_variables(self) -> None:
-        """Extract variables from all active panes and update the shared input list."""
+        """Extract variables from all message blocks in all active panes."""
         all_variables = set()
         formatter = string.Formatter()
 
-        # Parse text from all text areas
-        for text_area in self.query(TextArea):
-            text = text_area.text
+        # Parse text from all message block text areas
+        for msg_block in self.query(MessageBlock):
+            text = msg_block.query_one(TextArea).text
             if text:
                 from contextlib import suppress
 
@@ -228,24 +229,30 @@ class VergerTUI(App):
 
     async def _run_single_pane(self, pane: ConfigPane, variables: dict[str, str]) -> None:
         """
-        Execute a single pane's configuration.
+        Execute a single pane's configuration with multi-message support.
 
         Args:
             pane: The ConfigPane to run.
             variables: Shared variables for formatting the prompt.
         """
         model_select = pane.query_one(f"#model-select-{pane.pane_id}", Select)
-        text_area = pane.query_one(f"#prompt-text-{pane.pane_id}", TextArea)
         output_display = pane.query_one(f"#output-display-{pane.pane_id}", TextArea)
 
         if model_select.value == Select.BLANK:
             output_display.text = "Please select a model."
             return
 
-        raw_prompt_text = text_area.text
-        if not raw_prompt_text:
-            output_display.text = "Prompt is empty."
+        # Collect all messages from the blocks
+        message_blocks = list(pane.query(MessageBlock))
+        if not message_blocks:
+            output_display.text = "Conversation is empty."
             return
+
+        prompt_messages = []
+        for block in message_blocks:
+            data = block.get_message_data()
+            # We pass a list of dicts which NativeListResolver can handle
+            prompt_messages.append(data)
 
         output_display.text = "Waiting for model..."
 
@@ -256,15 +263,10 @@ class VergerTUI(App):
             # Dynamically load the model object
             model_obj = import_reference(model_ref)
 
-            # Since the user might have edited the text area, we treat the
-            # text area content ITSELF as the raw prompt object (a string).
-            # We don't use the prompt reference here.
-            prompt_obj = raw_prompt_text
-
             # Run engine
             response_message = await self.engine.run(
                 model_obj=model_obj,
-                prompt_obj=prompt_obj,
+                prompt_obj=prompt_messages,
                 variables=variables,
             )
             output_display.text = response_message.content
