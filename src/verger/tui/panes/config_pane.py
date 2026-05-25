@@ -76,7 +76,9 @@ class ConfigPane(VergerTUIComponent):
 
                 # Update the text area
                 text_area = self.query_one(f"#prompt-text-{self.pane_id}", TextArea)
-                text_area.text = prompt.get_text()
+                messages = prompt.get_messages()
+                if messages:
+                    text_area.text = messages[0].content
 
             except Exception as e:
                 self.app_ref.notify(f"Error loading preset: {e}", severity="error")

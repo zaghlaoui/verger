@@ -16,8 +16,9 @@ async def test_engine_run_success(mock_user_project):
     # The engine now expects RAW objects, not references.
     raw_prompt = "Hello, {name}! Welcome to {place}."
 
-    def mock_model(prompt: str) -> str:
-        return f"PROCESSED: {prompt}"
+    def mock_model(messages: list) -> str:
+        content = messages[0].content
+        return f"PROCESSED: {content}"
 
     engine = ExecutionEngine()
     result = await engine.run(
@@ -26,7 +27,7 @@ async def test_engine_run_success(mock_user_project):
         variables={"name": "Karim", "place": "the Verger engine"},
     )
 
-    assert result == "PROCESSED: Hello, Karim! Welcome to the Verger engine."
+    assert result.content == "PROCESSED: Hello, Karim! Welcome to the Verger engine."
 
 
 @pytest.mark.asyncio
@@ -37,7 +38,7 @@ async def test_engine_run_with_missing_variables(mock_user_project):
 
     with pytest.raises(KeyError):
         await engine.run(
-            model_obj=lambda x: x,
+            model_obj=lambda messages: "ok",
             prompt_obj=raw_prompt,
             variables={},  # Missing 'name'
         )
@@ -52,7 +53,7 @@ async def test_engine_run_with_tools(mock_user_project):
         """A simple tool."""
         return x * 2
 
-    def mock_model_with_tools(prompt: str, tools: list | None = None) -> str:
+    def mock_model_with_tools(messages: list, tools: list | None = None) -> str:
         if tools and len(tools) > 0:
             tool_name = tools[0].name
             return f"Model ran with tool: {tool_name}"
@@ -65,7 +66,7 @@ async def test_engine_run_with_tools(mock_user_project):
         tools=[tool_func],
     )
 
-    assert result == "Model ran with tool: tool_func"
+    assert result.content == "Model ran with tool: tool_func"
 
 
 def test_prompt_variable_discovery(mock_user_project):

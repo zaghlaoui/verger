@@ -2,22 +2,24 @@
 
 from typing import Any, Protocol, runtime_checkable
 
+from verger.core.schema import VergerMessage
+
 
 @runtime_checkable
 class VergerPrompt(Protocol):
     """
     The interface for a loaded prompt.
 
-    It provides the raw text and metadata about where it came from,
+    It provides the message templates and metadata about where it came from,
     regardless of the underlying prompt framework.
     """
 
-    def get_text(self) -> str:
+    def get_messages(self) -> list[VergerMessage]:
         """
-        Return the current raw text of the prompt.
+        Return the raw message templates of the prompt.
 
         Returns:
-            The raw prompt template string.
+            A list of VergerMessage objects acting as templates.
         """
         ...
 
@@ -30,15 +32,15 @@ class VergerPrompt(Protocol):
         """
         ...
 
-    def format(self, **kwargs: Any) -> str:
+    def format(self, **kwargs: Any) -> list[VergerMessage]:
         """
-        Fill the prompt with variables and return the resulting string.
+        Fill the prompt templates with variables and return the resulting messages.
 
         Args:
-            **kwargs: Variables to inject into the prompt template.
+            **kwargs: Variables to inject into the message templates.
 
         Returns:
-            The fully formatted prompt string.
+            A list of fully formatted VergerMessage objects.
         """
         ...
 

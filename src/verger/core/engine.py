@@ -4,6 +4,7 @@ from typing import Any
 
 from verger.core.models import model_registry
 from verger.core.prompts import prompt_registry
+from verger.core.schema import VergerMessage
 from verger.core.tools import tool_registry
 
 
@@ -20,7 +21,7 @@ class ExecutionEngine:
         variables: dict[str, Any] | None = None,
         tools: list[Any] | None = None,
         **kwargs: Any,
-    ) -> str:
+    ) -> VergerMessage:
         """
         Loads the prompt, fills it with variables, and runs it on the model.
 
@@ -32,7 +33,7 @@ class ExecutionEngine:
             **kwargs: Additional parameters to pass to the model's invoke method
 
         Returns:
-            The string response from the model.
+            The VergerMessage response from the model.
         """
         # 1. Resolve the model adapter
         model = model_registry.resolve(model_obj)
@@ -43,9 +44,11 @@ class ExecutionEngine:
         # 3. Resolve tool adapters
         resolved_tools = [tool_registry.resolve(t) for t in (tools or [])]
 
-        # 4. Format the prompt and invoke the model
+        # 4. Format the prompt messages and invoke the model
+        formatted_messages = prompt.format(**(variables or {}))
+
         return await model.invoke(
-            prompt.format(**(variables or {})),
+            messages=formatted_messages,
             tools=resolved_tools or None,
             **kwargs,
         )

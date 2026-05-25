@@ -3,6 +3,7 @@
 from typing import Any
 
 from verger.core.models import ModelResolver, VergerModel
+from verger.core.schema import MessageRole, VergerMessage
 from verger.core.tools.tool_base import VergerTool
 
 
@@ -25,38 +26,41 @@ class LangChainAdapter(VergerModel):
 
     async def invoke(
         self,
-        prompt: str,
+        messages: list[VergerMessage],
         tools: list[VergerTool] | None = None,
         **kwargs: Any,
-    ) -> str:
+    ) -> VergerMessage:
         """
-        Invoke the LangChain runnable with the given prompt.
+        Invoke the LangChain runnable and return a VergerMessage result.
 
         Args:
-            prompt: The formatted prompt string to send to the model.
+            messages: A list of formatted messages.
             tools: Optional list of tools to bind to the model.
             **kwargs: Additional parameters to pass to ainvoke.
 
         Returns:
-            The string content of the model's response.
+            A VergerMessage containing the AI's response.
         """
         runnable = self.runnable
 
-        # If tools are provided, try to bind them if the runnable supports it
+        # Convert VergerMessage objects to LangChain tuple format
+        role_mapping = {
+            "system": "system",
+            "user": "human",
+            "ai": "ai",
+            "tool": "tool",
+        }
+        lc_messages = [(role_mapping.get(m.role, "human"), m.content) for m in messages]
+
+        # If tools are provided, try to bind them
         if tools and hasattr(runnable, "bind_tools"):
-            # LangChain models usually take the tools directly or as a list
-            # We pass the underlying tool objects if possible, but for now
-            # we just pass the adapters if they are already LangChain-compatible
-            # OR we might need a LangChainToolAdapter.
-            # For this MVP, we just log a warning if we can't easily bind.
             runnable = runnable.bind_tools(tools)
 
-        # Assuming the runnable returns an object with a .content attribute
-        # like AIMessage, or just a string.
-        result = await runnable.ainvoke(prompt, **kwargs)
-        if hasattr(result, "content"):
-            return str(result.content)
-        return str(result)
+        result = await runnable.ainvoke(lc_messages, **kwargs)
+
+        # Extract content and return as VergerMessage
+        content = str(getattr(result, "content", result))
+        return VergerMessage(role=MessageRole.AI, content=content)
 
 
 class LangChainResolver(ModelResolver):

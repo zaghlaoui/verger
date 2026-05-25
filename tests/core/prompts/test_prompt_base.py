@@ -5,14 +5,14 @@ def test_prompt_protocols():
     """Test that prompt protocols are runtime checkable."""
 
     class ValidPrompt:
-        def get_text(self):
-            return "text"
+        def get_messages(self):
+            return []
 
         def get_id(self):
             return "id"
 
         def format(self, **kwargs):
-            return "text"
+            return []
 
         def get_variables(self):
             return set()

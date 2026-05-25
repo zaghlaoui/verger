@@ -262,12 +262,12 @@ class VergerTUI(App):
             prompt_obj = raw_prompt_text
 
             # Run engine
-            result = await self.engine.run(
+            response_message = await self.engine.run(
                 model_obj=model_obj,
                 prompt_obj=prompt_obj,
                 variables=variables,
             )
-            output_display.text = result
+            output_display.text = response_message.content
         except Exception as e:
             output_display.text = f"Error: {e}"
 

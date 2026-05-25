@@ -18,7 +18,9 @@ def test_string_prompt_adapter(mock_user_project):
     # Resolve should directly handle the raw string object
     prompt = prompt_registry.resolve(raw_prompt_string)
 
-    assert prompt.get_text() == "You are a helpful assistant."
+    messages = prompt.get_messages()
+    assert len(messages) == 1
+    assert messages[0].content == "You are a helpful assistant."
 
 
 def test_string_prompt_format_error():
@@ -26,6 +28,14 @@ def test_string_prompt_format_error():
     prompt = NativeStringPrompt("Hello {name}")
     with pytest.raises(KeyError):
         prompt.format()  # Missing 'name'
+
+
+def test_string_prompt_format_success():
+    """Test that formatting returns a list of messages."""
+    prompt = NativeStringPrompt("Hello {name}")
+    messages = prompt.format(name="World")
+    assert len(messages) == 1
+    assert messages[0].content == "Hello World"
 
 
 def test_string_prompt_id():

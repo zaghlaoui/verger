@@ -63,7 +63,9 @@ class PromptsPane(VergerTUIComponent):
             vars_str = ", ".join(sorted(prompt.get_variables())) or "None"
             self.query_one("#prompt-vars-display", Static).update(vars_str)
 
-            self.query_one("#prompt-content-display", TextArea).text = prompt.get_text()
+            messages = prompt.get_messages()
+            if messages:
+                self.query_one("#prompt-content-display", TextArea).text = messages[0].content
 
         except Exception as e:
             self.app_ref.notify(f"Error loading prompt details: {e}", severity="error")

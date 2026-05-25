@@ -11,11 +11,16 @@ async def test_langchain_adapter_invoke_basic():
     mock_runnable = AsyncMock()
     mock_runnable.ainvoke.return_value = "Hello world"
 
-    adapter = LangChainAdapter(mock_runnable)
-    result = await adapter.invoke("Hi")
+    from verger.core.schema import MessageRole, VergerMessage
 
-    assert result == "Hello world"
-    mock_runnable.ainvoke.assert_called_once_with("Hi")
+    messages = [VergerMessage(role=MessageRole.USER, content="Hi")]
+    adapter = LangChainAdapter(mock_runnable)
+    result = await adapter.invoke(messages)
+
+    assert result.content == "Hello world"
+    assert result.role == MessageRole.AI
+    # Verify it was converted to LangChain format [("human", "Hi")]
+    mock_runnable.ainvoke.assert_called_once_with([("human", "Hi")])
 
 
 @pytest.mark.asyncio
@@ -26,10 +31,14 @@ async def test_langchain_adapter_invoke_with_content():
     mock_result.content = "Message content"
     mock_runnable.ainvoke.return_value = mock_result
 
-    adapter = LangChainAdapter(mock_runnable)
-    result = await adapter.invoke("Hi")
+    from verger.core.schema import MessageRole, VergerMessage
 
-    assert result == "Message content"
+    messages = [VergerMessage(role=MessageRole.USER, content="Hi")]
+    adapter = LangChainAdapter(mock_runnable)
+    result = await adapter.invoke(messages)
+
+    assert result.content == "Message content"
+    assert result.role == MessageRole.AI
 
 
 @pytest.mark.asyncio
@@ -40,17 +49,21 @@ async def test_langchain_adapter_bind_tools():
     mock_bound_runnable.ainvoke.return_value = "Tool result"
     mock_runnable.bind_tools.return_value = mock_bound_runnable
 
+    from verger.core.schema import MessageRole, VergerMessage
+
+    messages = [VergerMessage(role=MessageRole.USER, content="Use tools")]
     adapter = LangChainAdapter(mock_runnable)
     from typing import cast
 
     from verger.core.tools.tool_base import VergerTool
 
     tools = cast(list[VergerTool], [MagicMock()])
-    result = await adapter.invoke("Use tools", tools=tools)
+    result = await adapter.invoke(messages, tools=tools)
 
-    assert result == "Tool result"
+    assert result.content == "Tool result"
+    assert result.role == MessageRole.AI
     mock_runnable.bind_tools.assert_called_once_with(tools)
-    mock_bound_runnable.ainvoke.assert_called_once_with("Use tools")
+    mock_bound_runnable.ainvoke.assert_called_once_with([("human", "Use tools")])
 
 
 def test_langchain_resolver_can_handle():
