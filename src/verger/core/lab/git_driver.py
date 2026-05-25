@@ -1,4 +1,4 @@
-"""Service for interacting with Git for hidden data storage."""
+"""Internal driver for interacting with Git as a data store."""
 
 import json
 import logging

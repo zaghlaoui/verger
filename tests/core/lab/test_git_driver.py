@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from verger.core.git_service import GitService
+from verger.core.lab.git_driver import GitService
 from verger.core.schema import (
     CollaborationMetadata,
     MessageRole,
