@@ -5,8 +5,8 @@ import os
 import tomllib
 from pathlib import Path
 
-from verger.core.config.schema import VergerConfig
 from verger.core.exceptions import VergerConfigurationError
+from verger.core.schema.config import VergerConfig
 
 logger = logging.getLogger(__name__)
 

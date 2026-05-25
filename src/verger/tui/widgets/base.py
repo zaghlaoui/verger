@@ -4,8 +4,8 @@ from typing import Any
 
 from textual.containers import Vertical
 
-from verger.core.config.schema import VergerConfig
 from verger.core.engine import ExecutionEngine
+from verger.core.schema.config import VergerConfig
 
 
 class VergerTUIComponent(Vertical):

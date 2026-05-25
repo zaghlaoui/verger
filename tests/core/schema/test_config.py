@@ -1,6 +1,6 @@
 import pytest
 
-from verger.core.config.schema import ModelConfig, VergerConfig
+from verger.core.schema.config import ModelConfig, VergerConfig
 
 
 def test_verger_config_defaults():

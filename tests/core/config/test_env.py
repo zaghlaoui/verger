@@ -3,7 +3,7 @@ import os
 
 from verger.core.config.env import load_env
 from verger.core.config.loader import load_config
-from verger.core.config.schema import VergerConfig
+from verger.core.schema.config import VergerConfig
 
 
 def test_load_env_logic(mock_user_project):

@@ -8,8 +8,8 @@ from verger.core.config.loader import (
     get_config,
     load_config,
 )
-from verger.core.config.schema import VergerConfig
 from verger.core.exceptions import VergerConfigurationError
+from verger.core.schema.config import VergerConfig
 
 
 def test_load_config_from_verger_toml(mock_user_project):

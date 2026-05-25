@@ -6,7 +6,7 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Label, ListItem, ListView, Static, TextArea
 
-from verger.core.config.schema import ModelConfig
+from verger.core.schema.config import ModelConfig
 from verger.tui.widgets.base import VergerTUIComponent
 
 
