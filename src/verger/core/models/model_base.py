@@ -2,6 +2,7 @@
 
 from typing import Any, Protocol, runtime_checkable
 
+from verger.core.schema import VergerMessage
 from verger.core.tools.tool_base import VergerTool
 
 
@@ -16,20 +17,20 @@ class VergerModel(Protocol):
 
     async def invoke(
         self,
-        prompt: str,
+        messages: list[VergerMessage],
         tools: list[VergerTool] | None = None,
         **kwargs: Any,
-    ) -> str:
+    ) -> VergerMessage:
         """
-        Run the prompt through the model and return the string result.
+        Run the messages through the model and return the AI's message.
 
         Args:
-            prompt: The formatted prompt string to send to the model.
+            messages: A list of formatted VergerMessage objects to send to the model.
             tools: An optional list of VergerTool adapters available to the model.
             **kwargs: Additional model-specific parameters (e.g., temperature).
 
         Returns:
-            The string response from the model.
+            The VergerMessage response from the model (usually with role=AI).
         """
         ...
 

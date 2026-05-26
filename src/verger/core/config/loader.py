@@ -5,8 +5,8 @@ import os
 import tomllib
 from pathlib import Path
 
-from verger.core.config.schema import VergerConfig
 from verger.core.exceptions import VergerConfigurationError
+from verger.core.schema.config import VergerConfig
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +36,7 @@ def load_config(root_dir: Path | None = None) -> VergerConfig:
         path = Path(env_config_path)
         if path.exists():
             _config = _load_from_file(path)
+            _config.status.config_source = str(path)
             logger.debug(f"Loaded configuration from environment override: {path}")
             return _config
         else:
@@ -47,6 +48,7 @@ def load_config(root_dir: Path | None = None) -> VergerConfig:
     verger_toml_path = root / "verger.toml"
     if verger_toml_path.exists():
         _config = _load_from_file(verger_toml_path)
+        _config.status.config_source = str(verger_toml_path)
         logger.debug(f"Loaded configuration from {verger_toml_path}")
         return _config
 
@@ -56,12 +58,14 @@ def load_config(root_dir: Path | None = None) -> VergerConfig:
         config_data = _parse_pyproject(pyproject_path)
         if config_data:
             _config = VergerConfig(**config_data)
+            _config.status.config_source = f"{pyproject_path} ([tool.verger])"
             logger.debug(f"Loaded configuration from {pyproject_path}")
             return _config
 
     # Default: Empty config
     logger.warning("No configuration file found. Using default settings.")
     _config = VergerConfig()
+    _config.status.config_source = "Defaults (No file found)"
     return _config
 
 

@@ -1,103 +1,37 @@
 """
 Verger Terminal User Interface.
 
-Provides a side-by-side comparison environment for AI models and prompts.
+Main application module for the Verger TUI.
 """
 
 import asyncio
 import string
+from pathlib import Path
 from typing import Any, cast
 
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, HorizontalScroll, Vertical, VerticalScroll
-from textual.widgets import Button, Footer, Header, Input, Label, Select, TextArea
+from textual.widgets import (
+    Button,
+    Footer,
+    Header,
+    Input,
+    Label,
+    Select,
+    TabbedContent,
+    TabPane,
+    TextArea,
+)
 
 from verger.core.config.loader import get_config
 from verger.core.engine import ExecutionEngine
-from verger.core.prompts import prompt_registry
+from verger.tui.panes.config_pane import ConfigPane
+from verger.tui.panes.models_pane import ModelsPane
+from verger.tui.panes.prompts_pane import PromptsPane
+from verger.tui.panes.status_pane import StatusPane
+from verger.tui.panes.tools_pane import ToolsPane
+from verger.tui.widgets.message_block import MessageBlock
 from verger.utils.imports import import_reference
-
-
-class ConfigPane(Vertical):
-    """
-    A single configuration pane.
-
-    Contains model selection, prompt preset selection, an editable prompt text area,
-    and a display for the model's output.
-    """
-
-    def __init__(self, pane_id: int, app_ref: "VergerTUI", **kwargs: Any):
-        """
-        Initialize the configuration pane.
-
-        Args:
-            pane_id: Unique numerical ID for this pane.
-            app_ref: Reference to the parent TUI application.
-            **kwargs: Additional parameters for the Vertical container.
-        """
-        super().__init__(**kwargs)
-        self.pane_id = pane_id
-        self.app_ref = app_ref
-        self.border_title = f"Configuration {pane_id}"
-
-    def compose(self) -> ComposeResult:
-        """
-        Build the UI structure for the configuration pane.
-
-        Yields:
-            The widgets that make up the pane.
-        """
-        model_options = [(name, name) for name in self.app_ref.config.models.keys()]
-        prompt_options = [(name, ref) for name, ref in self.app_ref.config.prompts.items()]
-
-        with Horizontal(classes="pane-selectors"):
-            yield Select(
-                model_options,
-                prompt="Model",
-                id=f"model-select-{self.pane_id}",
-                classes="pane-select",
-            )
-            yield Select(
-                prompt_options,
-                prompt="Preset",
-                id=f"prompt-select-{self.pane_id}",
-                classes="pane-select",
-            )
-        yield Label("Edit Prompt:", classes="pane-label")
-        yield TextArea(id=f"prompt-text-{self.pane_id}", classes="pane-textarea")
-        yield Label("Output:", classes="pane-label")
-        yield TextArea(id=f"output-display-{self.pane_id}", classes="pane-output", read_only=True)
-
-    def on_select_changed(self, event: Select.Changed) -> None:
-        """
-        Handle preset selection to populate the text area.
-
-        Args:
-            event: The selection change event.
-        """
-        if event.select.id == f"prompt-select-{self.pane_id}" and event.value != Select.BLANK:
-            try:
-                # Load the raw prompt object from the reference
-                prompt_obj = import_reference(cast(str, event.value))
-                # Resolve it to a VergerPrompt adapter to get its text
-                prompt = prompt_registry.resolve(prompt_obj)
-
-                # Update the text area
-                text_area = self.query_one(f"#prompt-text-{self.pane_id}", TextArea)
-                text_area.text = prompt.get_text()
-
-            except Exception as e:
-                self.app_ref.notify(f"Error loading preset: {e}", severity="error")
-
-    def on_text_area_changed(self, event: TextArea.Changed) -> None:
-        """
-        Notify the app to update shared variables when text area changes.
-
-        Args:
-            event: The text area change event.
-        """
-        # Using a small delay to avoid excessive parsing while typing
-        self.app_ref.schedule_variable_update()
 
 
 class VergerTUI(App):
@@ -109,111 +43,7 @@ class VergerTUI(App):
     """
 
     TITLE = "Verger: The AI Weaver"
-    CSS = """
-    Screen {
-        layout: vertical;
-    }
-
-    #top-half {
-        height: 1fr;
-        min-height: 15;
-        border-bottom: solid $primary;
-    }
-
-    #panes-container {
-        height: 100%;
-    }
-
-    ConfigPane {
-        width: 45;
-        height: 100%;
-        border: solid green;
-        margin: 0 1;
-        padding: 0;
-    }
-
-    .pane-selectors {
-        height: 3;
-        margin: 0;
-        padding: 0;
-    }
-
-    .pane-select {
-        width: 1fr;
-        height: 3;
-        margin: 0;
-        padding: 0;
-    }
-
-    .pane-label {
-        height: 1;
-        margin: 0 0 0 1;
-        padding: 0;
-        color: $text-muted;
-    }
-
-    .pane-textarea {
-        height: 1fr;
-        margin: 0;
-        padding: 0;
-    }
-
-    .pane-output {
-        height: 1fr;
-        margin: 0;
-        padding: 0;
-    }
-
-    #add-pane-container {
-        width: 25;
-        height: 100%;
-        border: dashed $success;
-        align: center middle;
-        margin: 0 1;
-        padding: 0;
-    }
-
-    #bottom-half {
-        height: auto;
-        max-height: 30%;
-        padding: 0 1;
-    }
-
-    .input-row {
-        height: 3;
-        margin: 0;
-    }
-
-    .input-label {
-        width: 15;
-        content-align: right middle;
-        margin-right: 1;
-    }
-
-    #action-buttons {
-        height: 3;
-        margin: 0;
-        padding: 0;
-    }
-
-    #run-btn {
-        width: 1fr;
-        height: 3;
-        margin: 0 1 0 0;
-    }
-
-    #add-pane-btn-bottom {
-        width: 20;
-        height: 3;
-        margin: 0;
-    }
-
-    #status-label {
-        color: $text-muted;
-        height: 1;
-        margin: 0 0 0 1;
-    }
-    """
+    CSS_PATH = Path(__file__).parent / "styles" / "main.css"
 
     BINDINGS = [
         ("q", "quit", "Quit"),
@@ -243,22 +73,36 @@ class VergerTUI(App):
         """
         yield Header()
 
-        # TOP HALF: Horizontal Scroll for Configuration Panes
-        with Vertical(id="top-half"):
-            with HorizontalScroll(id="panes-container"):
-                # We will mount panes here dynamically
-                with Vertical(id="add-pane-container"):
-                    yield Label("Add another\nconfiguration pane", id="add-pane-label")
-                    yield Button("+ Add Pane", id="add-pane-btn", variant="success")
+        with TabbedContent():
+            with TabPane("Playground", id="tab-playground"):
+                # TOP HALF: Horizontal Scroll for Configuration Panes
+                with Vertical(id="top-half"):
+                    with HorizontalScroll(id="panes-container"):
+                        # We will mount panes here dynamically
+                        with Vertical(id="add-pane-container"):
+                            yield Label("Add another\nconfiguration pane", id="add-pane-label")
+                            yield Button("+ Add Pane", id="add-pane-btn", variant="success")
 
-        # BOTTOM HALF: Shared Variables and Run Button
-        with Vertical(id="bottom-half"):
-            yield Label("[b]Shared Variables[/b]")
-            yield VerticalScroll(id="variable-inputs")
-            with Horizontal(id="action-buttons"):
-                yield Button("Run All Configurations (r)", variant="primary", id="run-btn")
-                yield Button("+ Add Pane (a)", id="add-pane-btn-bottom", variant="success")
-            yield Label("", id="status-label")
+                # BOTTOM HALF: Shared Variables and Run Button
+                with Vertical(id="bottom-half"):
+                    yield Label("[b]Shared Variables[/b]")
+                    yield VerticalScroll(id="variable-inputs")
+                    with Horizontal(id="action-buttons"):
+                        yield Button("Run All Configurations (r)", variant="primary", id="run-btn")
+                        yield Button("+ Add Pane (a)", id="add-pane-btn-bottom", variant="success")
+                    yield Label("", id="status-label")
+
+            with TabPane("Prompts", id="tab-prompts"):
+                yield PromptsPane(app_ref=self)
+
+            with TabPane("Models", id="tab-models"):
+                yield ModelsPane(app_ref=self)
+
+            with TabPane("Tools", id="tab-tools"):
+                yield ToolsPane(app_ref=self)
+
+            with TabPane("Status", id="tab-status"):
+                yield StatusPane(app_ref=self)
 
         yield Footer()
 
@@ -298,13 +142,13 @@ class VergerTUI(App):
         self._update_timer = self.set_timer(0.5, self._extract_and_update_variables)
 
     async def _extract_and_update_variables(self) -> None:
-        """Extract variables from all active panes and update the shared input list."""
+        """Extract variables from all message blocks in all active panes."""
         all_variables = set()
         formatter = string.Formatter()
 
-        # Parse text from all text areas
-        for text_area in self.query(TextArea):
-            text = text_area.text
+        # Parse text from all message block text areas
+        for msg_block in self.query(MessageBlock):
+            text = msg_block.query_one(TextArea).text
             if text:
                 from contextlib import suppress
 
@@ -385,24 +229,30 @@ class VergerTUI(App):
 
     async def _run_single_pane(self, pane: ConfigPane, variables: dict[str, str]) -> None:
         """
-        Execute a single pane's configuration.
+        Execute a single pane's configuration with multi-message support.
 
         Args:
             pane: The ConfigPane to run.
             variables: Shared variables for formatting the prompt.
         """
         model_select = pane.query_one(f"#model-select-{pane.pane_id}", Select)
-        text_area = pane.query_one(f"#prompt-text-{pane.pane_id}", TextArea)
         output_display = pane.query_one(f"#output-display-{pane.pane_id}", TextArea)
 
         if model_select.value == Select.BLANK:
             output_display.text = "Please select a model."
             return
 
-        raw_prompt_text = text_area.text
-        if not raw_prompt_text:
-            output_display.text = "Prompt is empty."
+        # Collect all messages from the blocks
+        message_blocks = list(pane.query(MessageBlock))
+        if not message_blocks:
+            output_display.text = "Conversation is empty."
             return
+
+        prompt_messages = []
+        for block in message_blocks:
+            data = block.get_message_data()
+            # We pass a list of dicts which NativeListResolver can handle
+            prompt_messages.append(data)
 
         output_display.text = "Waiting for model..."
 
@@ -413,18 +263,13 @@ class VergerTUI(App):
             # Dynamically load the model object
             model_obj = import_reference(model_ref)
 
-            # Since the user might have edited the text area, we treat the
-            # text area content ITSELF as the raw prompt object (a string).
-            # We don't use the prompt reference here.
-            prompt_obj = raw_prompt_text
-
             # Run engine
-            result = await self.engine.run(
+            response_message = await self.engine.run(
                 model_obj=model_obj,
-                prompt_obj=prompt_obj,
+                prompt_obj=prompt_messages,
                 variables=variables,
             )
-            output_display.text = result
+            output_display.text = response_message.content
         except Exception as e:
             output_display.text = f"Error: {e}"
 

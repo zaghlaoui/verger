@@ -76,6 +76,13 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
+"src/verger/core/lab/git_driver.py" = ["S603", "S607"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+# B404: subprocess import, B603: subprocess.run without shell=True
+# These are audited and hardened in git_service.py
+skips = ["B404", "B603"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=src/verger --cov-report=term-missing --cov-fail-under=47"

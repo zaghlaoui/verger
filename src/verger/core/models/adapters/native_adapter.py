@@ -5,59 +5,73 @@ from collections.abc import Callable
 from typing import Any
 
 from verger.core.models import ModelResolver, VergerModel
+from verger.core.schema import MessageRole, VergerMessage
 from verger.core.tools.tool_base import VergerTool
 
 
 class NativeFunctionAdapter(VergerModel):
     """
-    Adapter for a standard Python function that takes a string and returns a string.
+    Adapter for a standard Python function used as an AI model.
 
     This allows any simple Python function (sync or async) to be treated as an
-    AI model within Verger.
+    AI model. It intelligently handles both string-based and message-based
+    function signatures.
     """
 
-    def __init__(self, func: Callable[[str], str] | Callable[[str], Any]):
+    def __init__(self, func: Callable[..., Any]):
         """
         Initialize the native function adapter.
 
         Args:
-            func: A callable that takes a string and returns a string or coroutine.
+            func: A callable to wrap as a model.
         """
         self.func = func
 
     async def invoke(
         self,
-        prompt: str,
+        messages: list[VergerMessage],
         tools: list[VergerTool] | None = None,
         **kwargs: Any,
-    ) -> str:
+    ) -> VergerMessage:
         """
-        Invoke the native function with the given prompt.
+        Invoke the native function and return the result as a message.
 
         Args:
-            prompt: The formatted prompt string.
-            tools: Optional list of tools (passed if the function signature allows it).
-            **kwargs: Additional parameters (ignored by default for native functions).
+            messages: The list of formatted messages.
+            tools: Optional list of tools.
+            **kwargs: Additional parameters.
 
         Returns:
-            The string result returned by the function.
+            A VergerMessage with role=AI containing the function's output.
         """
-        # If the function accepts a 'tools' argument, we pass it.
-        # Otherwise, we just pass the prompt.
         import inspect
-        from typing import cast
 
         sig = inspect.signature(self.func)
-        if "tools" in sig.parameters:
-            if asyncio.iscoroutinefunction(self.func):
-                func = cast(Callable[..., Any], self.func)
-                return await func(prompt, tools=tools)
-            func = cast(Callable[..., Any], self.func)
-            return str(func(prompt, tools=tools))
+        params = sig.parameters
 
+        # Prepare arguments based on what the function accepts
+        args_to_pass: dict[str, Any] = {}
+
+        if "messages" in params:
+            args_to_pass["messages"] = messages
+        elif params:
+            # If it doesn't accept 'messages', join all content as a single 'prompt' string
+            # This provides backward compatibility for string-based functions.
+            full_prompt = "\n\n".join(m.content for m in messages)
+            # Find the first parameter name to pass the prompt to
+            first_param = list(params.keys())[0]
+            args_to_pass[first_param] = full_prompt
+
+        if "tools" in params:
+            args_to_pass["tools"] = tools
+
+        # Execute
         if asyncio.iscoroutinefunction(self.func):
-            return await self.func(prompt)
-        return str(self.func(prompt))
+            result = await self.func(**args_to_pass, **kwargs)
+        else:
+            result = self.func(**args_to_pass, **kwargs)
+
+        return VergerMessage(role=MessageRole.AI, content=str(result))
 
 
 class NativeFunctionResolver(ModelResolver):

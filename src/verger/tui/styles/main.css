@@ -1,0 +1,162 @@
+Screen {
+    layout: vertical;
+}
+
+#top-half {
+    height: 1fr;
+    min-height: 15;
+    border-bottom: solid $primary;
+}
+
+#panes-container {
+    height: 100%;
+}
+
+ConfigPane {
+    width: 60;
+    height: 100%;
+    border: solid green;
+    margin: 0 1;
+    padding: 0;
+}
+
+.messages-scroll {
+    height: 1fr;
+    min-height: 10;
+    border: inner $primary;
+    background: $surface;
+}
+
+.pane-actions {
+    height: 3;
+    margin: 1 0;
+    padding: 0;
+}
+
+#save-snap-btn {
+    width: 1fr;
+}
+
+.pane-select {
+    width: 1fr;
+    height: 3;
+    margin: 0;
+    padding: 0;
+}
+
+.pane-label {
+    height: 1;
+    margin: 0 0 0 1;
+    padding: 0;
+    color: $text-muted;
+}
+
+.pane-textarea {
+    height: 1fr;
+    margin: 0;
+    padding: 0;
+}
+
+.pane-output {
+    height: 1fr;
+    margin: 0;
+    padding: 0;
+}
+
+#add-pane-container {
+    width: 25;
+    height: 100%;
+    border: dashed $success;
+    align: center middle;
+    margin: 0 1;
+    padding: 0;
+}
+
+#bottom-half {
+    height: auto;
+    max-height: 30%;
+    padding: 0 1;
+}
+
+.input-row {
+    height: 3;
+    margin: 0;
+}
+
+.input-label {
+    width: 15;
+    content-align: right middle;
+    margin-right: 1;
+}
+
+#action-buttons {
+    height: 3;
+    margin: 0;
+    padding: 0;
+}
+
+#run-btn {
+    width: 1fr;
+    height: 3;
+    margin: 0 1 0 0;
+}
+
+#add-pane-btn-bottom {
+    width: 20;
+    height: 3;
+    margin: 0;
+}
+
+#status-label {
+    color: $text-muted;
+    height: 1;
+    margin: 0 0 0 1;
+}
+
+/* Sidebar and Details View */
+.sidebar {
+    width: 30;
+    height: 100%;
+    border-right: solid $primary;
+    background: $panel;
+}
+
+.sidebar-title {
+    padding: 1 2;
+    background: $primary;
+    color: $text;
+}
+
+.details-view {
+    width: 1fr;
+    height: 100%;
+    padding: 1 2;
+}
+
+.detail-label {
+    margin-top: 1;
+    color: $accent;
+}
+
+.detail-sublabel {
+    margin-top: 1;
+    margin-left: 2;
+    color: $text-muted;
+}
+
+.detail-value {
+    margin-bottom: 1;
+    padding-left: 2;
+}
+
+.detail-textarea {
+    height: 1fr;
+    border: solid $primary;
+}
+
+#prompt-details-placeholder {
+    width: 100%;
+    height: 100%;
+    content-align: center middle;
+    color: $text-muted;
+}

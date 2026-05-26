@@ -4,14 +4,16 @@ import string
 from typing import Any
 
 from verger.core.prompts import PromptResolver, VergerPrompt
+from verger.core.schema import MessageRole, VergerMessage
 
 
 class NativeStringPrompt(VergerPrompt):
     """
     A prompt defined as a raw string.
 
-    This adapter handles standard Python strings and supports f-string style
-    placeholders (e.g., '{name}') for variable injection.
+    This adapter handles standard Python strings, supporting f-string style
+    placeholders (e.g., '{name}'). It automatically wraps the string into
+    a single USER message.
     """
 
     def __init__(self, text: str):
@@ -23,14 +25,14 @@ class NativeStringPrompt(VergerPrompt):
         """
         self.text = text
 
-    def get_text(self) -> str:
+    def get_messages(self) -> list[VergerMessage]:
         """
-        Get the raw template text.
+        Get the prompt as a list of message templates.
 
         Returns:
-            The template string.
+            A list containing a single USER message template.
         """
-        return self.text
+        return [VergerMessage(role=MessageRole.USER, content=self.text)]
 
     def get_id(self) -> str:
         """
@@ -41,17 +43,18 @@ class NativeStringPrompt(VergerPrompt):
         """
         return f"StringPrompt-{id(self)}"
 
-    def format(self, **kwargs: Any) -> str:
+    def format(self, **kwargs: Any) -> list[VergerMessage]:
         """
-        Format the prompt string with the provided variables.
+        Format the prompt string and return it as a list of messages.
 
         Args:
             **kwargs: Variables to inject into the placeholders.
 
         Returns:
-            The formatted prompt string.
+            A list containing one fully formatted USER message.
         """
-        return self.text.format(**kwargs)
+        formatted_content = self.text.format(**kwargs)
+        return [VergerMessage(role=MessageRole.USER, content=formatted_content)]
 
     def get_variables(self) -> set[str]:
         """

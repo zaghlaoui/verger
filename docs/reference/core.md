@@ -7,5 +7,5 @@ This section documents the core execution logic and initialization systems of Ve
 ::: verger.core.plugins
 ::: verger.core.exceptions
 ::: verger.core.config.loader
-::: verger.core.config.schema
+::: verger.core.schema.config
 ::: verger.core.config.env

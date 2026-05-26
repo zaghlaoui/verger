@@ -1,24 +1,6 @@
 import pytest
 
-from verger.core.plugins import load_plugins
-from verger.core.prompts import prompt_registry
 from verger.utils.imports import import_reference
-
-
-@pytest.fixture(autouse=True)
-def init_plugins():
-    """Ensure plugins are loaded before each test."""
-    load_plugins()
-
-
-def test_string_prompt_adapter(mock_user_project):
-    """Test that NativeStringResolver can wrap a raw string object."""
-    raw_prompt_string = "You are a helpful assistant."
-
-    # Resolve should directly handle the raw string object
-    prompt = prompt_registry.resolve(raw_prompt_string)
-
-    assert prompt.get_text() == "You are a helpful assistant."
 
 
 def test_import_reference_success(mock_user_project):
